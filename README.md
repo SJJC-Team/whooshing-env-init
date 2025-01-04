@@ -7,9 +7,28 @@
 - [**Vapor 18.7.5**](https://docs.vapor.codes/install/linux/)
 - [**pm2**](https://pm2.keymetrics.io/)
 
+见[主项目](https://github.com/SJJC-Team/whooshing)
+
 ## 部署说明
 
 - **Ubuntu amd64 22.04 +**
+
+运行脚本:
+
+```shell
+wget https://raw.githubusercontent.com/SJJC-Team/whooshing-env-init/refs/heads/develop/env_init/init.sh
+sudo chmod +x init.sh
+sudo ./init.sh
+```
+
+部署完成后，您可以使用以下命令检查环境是否正确安装：
+
+```shell
+node --version
+swift --version
+pm2 --version
+vapor --version
+```
 
 ## **联系方式**
 
