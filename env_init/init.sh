@@ -30,6 +30,6 @@ echo -e "${b}运行初始化程序...${n}"
 sudo src/init_all.sh
 
 echo -e "${b}清理...${n}"
-sudo rm -rf /root/configs/whooshing-module-manager
+sudo rm -rf /root/configs/whooshing-env-init
 
 echo -e "${g}环境初始化完成.${n}"
