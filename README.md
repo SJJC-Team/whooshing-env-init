@@ -5,7 +5,9 @@
 - [**Nodejs 23(nvm)**](https://nodejs.org/en/download)
 - [**Swift 6.0.3(swiftly)**](https://swiftlang.github.io/swiftly/)
 - [**Vapor 18.7.5**](https://docs.vapor.codes/install/linux/)
-- [**pm2**](https://pm2.keymetrics.io/)
+- [**PM2 5.4.3**](https://pm2.keymetrics.io/)
+- [**Vault 1.18.3**](https://developer.hashicorp.com/vault/docs/install)
+- [**Percona PostgreSQL 17**](https://percona.github.io/pg_tde/main/install.html)
 
 见[主项目](https://github.com/SJJC-Team/whooshing)
 
