@@ -16,8 +16,8 @@ sudo mkdir -p /root/configs
 cd /root/configs
 
 echo -e "${b}克隆仓库...${n}"
-git clone https://github.com/SJJC-Team/whooshing-module-manager.git
-cd whooshing-module-manager/env_init
+git clone https://github.com/SJJC-Team/whooshing-env-init.git
+cd whooshing-env-init/env_init
 
 echo -e "${b}设置 init_env.sh 和 uninstall.sh 的可执行权限...${n}"
 chmod +x src/init_all.sh
