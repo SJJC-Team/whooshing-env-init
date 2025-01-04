@@ -16,12 +16,8 @@ sudo mkdir -p /root/configs
 cd /root/configs
 
 echo -e "${b}克隆仓库...${n}"
-git clone https://github.com/SJJC-Team/whooshing-module-manager.git
-cd whooshing-module-manager/env_init
-
-echo -e "${b}设置 init_env.sh 和 uninstall.sh 的可执行权限...${n}"
-chmod +x src/init_all.sh
-chmod +x src/uninstall.sh
+git clone https://github.com/SJJC-Team/whooshing-env-init.git
+cd whooshing-env-init/env_init
 
 echo -e "${b}运行卸载程序...${n}"
 sudo src/uninstall.sh
@@ -30,6 +26,6 @@ echo -e "${b}运行初始化程序...${n}"
 sudo src/init_all.sh
 
 echo -e "${b}清理...${n}"
-sudo rm -rf /root/configs/whooshing-module-manager
+sudo rm -rf /root/configs/whooshing-env-init
 
 echo -e "${g}环境初始化完成.${n}"
