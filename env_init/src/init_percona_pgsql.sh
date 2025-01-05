@@ -16,7 +16,7 @@ echo -e "${b}检查 Vault 是否已解封...${n}"
 if ! vault status > /dev/null 2>&1; then echo -e "${r}错误: Vault 未解封，请先解封 Vault${n}"; exit 1; fi
 
 echo -e "${b}登录 Vault...${n}"
-vault login "$WHOOSHING_VAULT_ROOT_TOKEN" > /dev/null 2>&1 || { echo "${r}发生错误: vault 登陆失败！${n}" >&2; exit 1; }
+vault login "$WHOOSHING_VAULT_ROOT_TOKEN" > /dev/null 2>&1 || { echo -e "${r}发生错误: vault 登陆失败！${n}" >&2; exit 1; }
 if ! vault kv get postgres/woo > /dev/null 2>&1; then 
     echo -e "${b}生成新的 Vault 密钥...${n}"
     if ! vault secrets list | grep -q '^postgres/'; then vault secrets enable -path=postgres kv; fi
