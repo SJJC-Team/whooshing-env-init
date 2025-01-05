@@ -18,16 +18,16 @@ if ! vault status > /dev/null 2>&1; then
     exit 1
 fi
 
-source /root/.env
+source /home/woo/.env
 
 echo -e "${b}登录 Vault...${n}"
 vault login "$VAULT_ROOT_TOKEN" > /dev/null 2>&1 || { echo "${r}发生错误: vault 登陆失败！${n}" >&2; exit 1; }
-if ! vault kv get postgres/postgres > /dev/null 2>&1; then 
+if ! vault kv get postgres/woo > /dev/null 2>&1; then 
     echo -e "${b}生成新的 Vault 密钥...${n}"
     if ! vault secrets list | grep -q '^postgres/'; then vault secrets enable -path=postgres kv; fi
-    vault kv put postgres/postgres value=$(openssl rand -hex 64)
+    vault kv put postgres/woo value=$(openssl rand -hex 64)
 fi
-key=$(vault kv get -field=value postgres/postgres 2>&1)
+key=$(vault kv get -field=value postgres/woo 2>&1)
 
 echo -e "${g}创建配置目录...${n}"
 mkdir -p /root/configs
@@ -60,9 +60,9 @@ fi
 
 if [ ! -f /var/lib/postgresql/.bashrc ]; then touch /var/lib/postgresql/.bashrc; fi
 if ! grep -q '/usr/lib/postgresql/17/bin' /var/lib/postgresql/.bashrc; then
-    echo 'export PATH=$PATH:/usr/lib/postgresql/17/bin' >> /var/lib/postgresql/.bashrc
+    sudo -u woo echo 'export PATH=$PATH:/usr/lib/postgresql/17/bin' >> /home/woo/.bashrc
 fi
 
-echo "postgres:$key" | sudo chpasswd
+echo "woo:$key" | sudo chpasswd
 
 echo -e "${b}------------------- Percona PostgreSQL 初始化 完成 -------------------${n}"

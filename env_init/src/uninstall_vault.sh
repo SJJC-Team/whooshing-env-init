@@ -27,7 +27,7 @@ if [[ $ans = y ]]; then
 fi
 sudo systemctl daemon-reload
 
-rm -f /root/.env
+rm -f /home/woo/.env
 
 echo -e "${g}Vault 已成功卸载。${n}"
 

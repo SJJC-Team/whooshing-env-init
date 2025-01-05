@@ -71,9 +71,10 @@ done
 echo -e "\n${g}Vault 已成功解封${n}"
 
 echo -e "\n${g}写入到环境变量${n}"
-echo "export VAULT_ROOT_TOKEN=$root_token" >> /root/.env
-chown root:root /root/.env
-chmod 600 /root/.env
+echo "export VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
+echo "export VAULT_ADDR='unix:///opt/vault/vault.sock'" >> /home/woo/.env
+chown root:root /home/woo/.env
+chmod 600 /home/woo/.env
 
 if [[ $noenter = true ]]; then
     echo -e "${g}请记下您的主密钥切片，以及 root 令牌:${n}"
