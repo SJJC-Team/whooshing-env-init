@@ -71,7 +71,7 @@ done
 echo -e "\n${g}Vault 已成功解封${n}"
 
 echo -e "\n${g}写入到环境变量${n}"
-echo "export VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
+echo "export WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
 echo "export VAULT_ADDR='unix:///opt/vault/vault.sock'" >> /home/woo/.env
 chown root:root /home/woo/.env
 chmod 600 /home/woo/.env

@@ -30,6 +30,6 @@ echo -e "${g}数据目录 '$data_dir' 的所有权已更改为 whooshing 组，�
 echo -e "${g}创建环境配置文件...${n}"
 rm -f /home/woo/.env
 touch /home/woo/.env && chown root:whooshing /home/woo/.env && chmod 660 /home/woo/.env
-echo "export DATA_DIR='$data_dir'" >> /home/woo/.env
+echo "export WHOOSHING_DATA_DIR='$data_dir'" >> /home/woo/.env
 
 echo -e "${b}------------------- 用户权限初始化完成 -------------------${n}"
