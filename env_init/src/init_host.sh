@@ -18,7 +18,7 @@ if ! getent group whooshing > /dev/null; then groupadd whooshing; echo -e "${g}�
 else echo -e "${g}组 'whooshing' 已存在。${n}"; fi
 
 echo -e "${g}创建用户 'woo' 并设置权限...${n}"
-if ! id -u woo > /dev/null 2>&1; then useradd -m -g woo woo; echo -e "${g}用户 'woo' 已创建${n}"; fi
+if ! id -u woo > /dev/null 2>&1; then useradd -m woo; echo -e "${g}用户 'woo' 已创建${n}"; fi
 
 usermod -aG whooshing woo;
 usermod -aG whooshing root

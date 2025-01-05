@@ -14,10 +14,14 @@ echo -e "${b}正在安装 Swiftly...${n}"
 
 mkdir -p /usr/local/bin/swiftly
 mkdir -p /usr/local/swiftly
-cp "$(dirname "$0")/swiftly" /usr/local/bin/swiftly/swiftly
-chmod +x /usr/local/bin/swiftly/swiftly
+
 rm -rf /usr/local/swiftly
 cp -r "$(dirname "$0")/swiftly_configs" /usr/local/swiftly
+
+mkdir -p /root/.swiftly
+wget -P /root/.swiftly https://github.com/swiftlang/swiftly/releases/download/0.3.0/swiftly-$(uname -m)-unknown-linux-gnu
+mv /root/.swiftly/swiftly-$(uname -m)-unknown-linux-gnu /usr/local/bin/swiftly/swiftly
+chmod +x /usr/local/bin/swiftly/swiftly
 
 source /usr/local/swiftly/env.sh
 
@@ -47,7 +51,7 @@ else echo -e "${g}Swift 安装成功${n}"; fi
 echo -e "${b}检查 Vapor 是否已安装...${n}"
 if ! command -v vapor &> /dev/null; then
     echo -e "${b}Vapor 未安装，正在安装 Vapor Toolbox...${n}"
-    rm -rf /root/.vapor; mkdir -p /root/.vapor; cd /root/.vapor
+    mkdir -p /root/.vapor; cd /root/.vapor
     git clone https://github.com/vapor/toolbox.git
     cd toolbox
     git checkout 18.7.5

@@ -27,11 +27,11 @@ chmod +x init.sh
 部署完成后，您可以使用以下命令检查环境是否正确安装：
 
 ```shell
-node --version
-swift --version
-pm2 --version
-vapor --version
-psql --version
+node --version; echo ------------------
+swift --version; echo ------------------
+pm2 --version; echo ------------------
+vapor --version; echo ------------------
+psql --version; echo ------------------
 vault --version
 ```
 

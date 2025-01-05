@@ -76,7 +76,12 @@ chmod 600 /home/woo/.env
 echo -e "${b}安装 medusa...${n}"
 mkdir /home/woo/.medusa
 echo -e "${b}正在安装 medusa...${n}"
-cp "$(dirname "$0")/medusa" /home/woo/.medusa/medusa
+cd /home/woo/.medusa
+wget https://github.com/jonasvinther/medusa/releases/download/v0.7.3/medusa_0.7.3_linux_$(dpkg --print-architecture).tar.gz
+mkdir bin
+tar -xvf medusa_0.7.3_linux_$(dpkg --print-architecture).tar.gz -C bin
+mv bin/medusa /home/woo/.medusa/medusa
+rm -rf bin medusa_0.7.3_linux_$(dpkg --print-architecture).tar.gz
 chmod +x /home/woo/.medusa/medusa
 chown -R root:whooshing /home/woo/.medusa
 chmod -R 750 /home/woo/.medusa
