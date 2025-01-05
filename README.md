@@ -15,13 +15,14 @@
 
 - **Ubuntu amd64 22.04 +**
 
-运行脚本:
+在 root 环境下运行脚本:
 
 ```shell
 wget https://raw.githubusercontent.com/SJJC-Team/whooshing-env-init/refs/heads/develop/env_init/init.sh
-sudo chmod +x init.sh
-sudo ./init.sh
+chmod +x init.sh
+./init.sh
 ```
+以上会创建默认的 whooshing 数据目录，位于 ```/whooshing```, 若你想使用不同的数据目录，可以改为运行 ```sudo ./init.sh /path/to/data_dir```
 
 部署完成后，您可以使用以下命令检查环境是否正确安装：
 
@@ -30,6 +31,8 @@ node --version
 swift --version
 pm2 --version
 vapor --version
+psql --version
+vault --version
 ```
 
 ## **联系方式**
