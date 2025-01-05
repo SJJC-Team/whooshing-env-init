@@ -69,7 +69,7 @@ vault secrets enable -path="module-bak" -version=2 kv
 echo -e "\n${b}写入到环境变量${n}"
 echo "export WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
 echo "export VAULT_ADDR='unix:///opt/vault/vault.sock'" >> /home/woo/.env
-echo "export VAULT_TOKEN=$WHOOSHING_VAULT_ROOT_TOKEN" >> /home/woo/.env
+echo "export VAULT_TOKEN=\$WHOOSHING_VAULT_ROOT_TOKEN" >> /home/woo/.env
 chown root:root /home/woo/.env
 chmod 600 /home/woo/.env
 
