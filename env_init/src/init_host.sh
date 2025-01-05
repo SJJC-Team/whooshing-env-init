@@ -33,4 +33,7 @@ rm -f /home/woo/.env
 touch /home/woo/.env && chown root:whooshing /home/woo/.env && chmod 660 /home/woo/.env
 echo "export WHOOSHING_DATA_DIR='$data_dir'" >> /home/woo/.env
 
+chown root:whooshing /home/woo/.env
+chmod 640 /home/woo/.env
+
 echo -e "${b}------------------- 用户权限初始化完成 -------------------${n}"

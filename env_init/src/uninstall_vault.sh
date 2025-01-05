@@ -13,13 +13,7 @@ echo -e "${b}------------------- Vault 卸载 -------------------${n}"
 
 echo -e "${b}正在卸载 Vault...${n}"
 if sudo systemctl is-active --quiet vault; then sudo systemctl stop vault; fi
-if dpkg -l | grep -q vault; then
-    expect << EOF
-spawn sudo apt-get remove --purge vault
-expect "Do you want to continue?" { send "Y\r" }
-expect eof
-EOF
-fi
+sudo apt-get remove --purge vault -y
 sudo rm -rf /etc/vault.d
 if [[ $noenter = true ]]; then ans=y
 else echo -e -n "${r}删除 Vault 的数据？(y/n): ${n}"; read -p "" ans; fi
@@ -30,6 +24,7 @@ fi
 
 sudo systemctl daemon-reload
 
-echo -e "${g}Vault 已成功卸载。${n}"
+echo -e "${b}删除 medusa...${n}"
+rm -rf /home/woo/.medusa
 
 echo -e "${b}------------------- Vault 卸载 完成 -------------------${n}"
