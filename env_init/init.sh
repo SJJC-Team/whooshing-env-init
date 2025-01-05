@@ -7,13 +7,16 @@ g='\033[32m'
 b='\033[34m'
 n='\033[0m'
 
+data_dir=${1:-/whooshing}
+
 # 授权 src 文件夹中的所有 sh 文件
 echo -e "${b}正在授权 src 文件夹中的所有 sh 文件...${n}"
 find "$(dirname "$0")" -type f -name "*.sh" -exec chmod +x {} \;
 echo -e "${g}授权完成${n}"
 
-sudo mkdir -p /root/configs
-cd /root/configs
+sudo rm -rf /root/.whooshing
+sudo mkdir /root/.whooshing
+cd /root/.whooshing
 
 echo -e "${b}克隆仓库...${n}"
 git clone https://github.com/SJJC-Team/whooshing-env-init.git
@@ -23,9 +26,9 @@ echo -e "${b}运行卸载程序...${n}"
 sudo src/uninstall.sh
 
 echo -e "${b}运行初始化程序...${n}"
-sudo src/init_all.sh
+sudo src/init_all.sh $data_dir
 
 echo -e "${b}清理...${n}"
-sudo rm -rf /root/configs/whooshing-env-init
+cd /root; sudo rm -rf /root/.whooshing
 
 echo -e "${g}环境初始化完成.${n}"

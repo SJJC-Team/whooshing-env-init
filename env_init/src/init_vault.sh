@@ -21,20 +21,11 @@ if [[ $1 = -n ]]; then noenter=true; else noenter=false; fi
 echo -e "${b}------------------- Vault 初始化 -------------------${n}"
 
 # 安装 vault
-if [[ $noenter = true ]]; then ans=y;
-else read -p "从头安装?(y/n): " ans; fi
-if [[ $ans = y ]]; then
-    echo -e "${b}安装 vault:${n}"
-    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-    expect << EOF
-spawn sudo apt-add-repository "deb \[arch=amd64\] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-expect " to continue or Ctrl-c to cancel" { send "\r" }
-expect eof
-EOF
-    sudo apt-get update && sudo apt-get install vault -y
-    echo -e "${g}Vault 安装完成${n}"
-fi
-
+echo -e "${b}安装 vault:${n}"
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main" -y
+sudo apt-get update && sudo apt-get install vault -y
+echo -e "${g}Vault 安装完成${n}"
 
 sudo cp "$(dirname "$0")/vault.hcl" /etc/vault.d/vault.hcl
 echo -e "${g}Vault 配置文件已复制${n}"
@@ -70,10 +61,25 @@ for ((i=0; i<$threshold; i++)); do
 done
 echo -e "\n${g}Vault 已成功解封${n}"
 
-echo -e "\n${g}写入到环境变量${n}"
-echo "export VAULT_ROOT_TOKEN=$root_token" >> /root/.env
-chown root:root /root/.env
-chmod 600 /root/.env
+vault login $root_token > /dev/null 2>&1 || { echo -e "${r}错误: vault 登陆失败！${n}" >&2; exit 1; }
+
+echo -e "${b}设置模块备份引擎...${n}"
+vault secrets enable -path="module-bak" -version=2 kv
+
+echo -e "\n${b}写入到环境变量${n}"
+echo "export WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
+echo "export VAULT_ADDR='unix:///opt/vault/vault.sock'" >> /home/woo/.env
+echo "export VAULT_TOKEN=\$WHOOSHING_VAULT_ROOT_TOKEN" >> /home/woo/.env
+chown root:root /home/woo/.env
+chmod 600 /home/woo/.env
+
+echo -e "${b}安装 medusa...${n}"
+mkdir /home/woo/.medusa
+echo -e "${b}正在安装 medusa...${n}"
+cp "$(dirname "$0")/medusa" /home/woo/.medusa/medusa
+chmod +x /home/woo/.medusa/medusa
+chown -R root:whooshing /home/woo/.medusa
+chmod -R 750 /home/woo/.medusa
 
 if [[ $noenter = true ]]; then
     echo -e "${g}请记下您的主密钥切片，以及 root 令牌:${n}"

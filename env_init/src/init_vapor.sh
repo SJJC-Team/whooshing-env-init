@@ -9,25 +9,17 @@ n='\033[0m'
 
 echo -e "${b}------------------- Vapor 初始化 -------------------${n}"
 
-mkdir -p /root/configs
-cd /root/configs
-
 # 安装 Swiftly
 echo -e "${b}正在安装 Swiftly...${n}"
-expect << EOF
-spawn bash -c "curl -L https://swiftlang.github.io/swiftly/swiftly-install.sh | bash"
-expect "Please select the platform to use for toolchain downloads:" { send "1\r" }
-expect "Select one of the following:" { send "2\r" }
-expect "Enter the swiftly data and configuration files directory" { send "/usr/local/swiftly\r"}
-expect "Enter the swiftly executables installation directory" { send "/usr/local/bin/swiftly\r" }
-expect "Modify login config" { send "n\r" }
-expect "Install system dependencies?" {send "Y\r"}
-expect "Select one of the following:" { send "1\r" }
-expect eof
-EOF
-echo -e "${g}Swiftly 安装成功${n}"
 
-. /usr/local/swiftly/env.sh
+mkdir -p /usr/local/bin/swiftly
+mkdir -p /usr/local/swiftly
+cp "$(dirname "$0")/swiftly" /usr/local/bin/swiftly/swiftly
+chmod +x /usr/local/bin/swiftly/swiftly
+rm -rf /usr/local/swiftly
+cp -r "$(dirname "$0")/swiftly_configs" /usr/local/swiftly
+
+source /usr/local/swiftly/env.sh
 
 echo -e "${b}检查 swiftly 安装路径...${n}"
 if [ -d "/usr/local/bin/swiftly" ]; then
@@ -55,10 +47,12 @@ else echo -e "${g}Swift 安装成功${n}"; fi
 echo -e "${b}检查 Vapor 是否已安装...${n}"
 if ! command -v vapor &> /dev/null; then
     echo -e "${b}Vapor 未安装，正在安装 Vapor Toolbox...${n}"
+    rm -rf /root/.vapor; mkdir -p /root/.vapor; cd /root/.vapor
     git clone https://github.com/vapor/toolbox.git
     cd toolbox
     git checkout 18.7.5
     make install
+    rm -rf /root/.vapor
     echo -e "${g}Vapor 安装成功${n}"
 else echo -e "${g}Vapor 已安装${n}"; fi
 

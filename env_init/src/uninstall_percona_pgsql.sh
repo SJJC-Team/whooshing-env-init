@@ -18,25 +18,11 @@ else
     echo -e "${g}服务未运行${n}"
 fi
 
-if dpkg-query -W -f='${Status}' 'percona-postgresql-17*' 2>/dev/null | grep -q "ok installed"; then
-    echo -e "${b}删除 Percona PostgreSQL...${n}"
-    expect << EOF
-spawn sudo apt remove percona-postgresql-17* percona-patroni percona-pgbackrest percona-pgbadger percona-pgbouncer
-expect "Do you want to continue?" { send "Y\r" }
-expect eof
-EOF
-    echo -e "${g}删除成功${n}"
-else echo -e "${g}Percona PostgreSQL 未安装${n}"; fi
+echo -e "${b}删除 Percona PostgreSQL...${n}"
+sudo apt remove percona-postgresql-17* percona-patroni percona-pgbackrest percona-pgbadger percona-pgbouncer -y
 
-if dpkg-query -W -f='${Status}' 'postgresql*' 2>/dev/null | grep -q "ok installed"; then
-    echo -e "${b}删除 PostgreSQL...${n}"
-    expect << EOF
-spawn sudo apt-get --purge remove postgresql postgresql-*
-expect "Do you want to continue?" { send "Y\r" }
-expect eof
-EOF
-    echo -e "${g}删除成功${n}"
-else echo -e "${g}PostgreSQL 未安装${n}"; fi
+echo -e "${b}删除 PostgreSQL...${n}"
+sudo apt-get --purge remove postgresql postgresql-* -y
 
 echo -e "${b}清除数据目录...${n}"
 rm -rf /data/percona

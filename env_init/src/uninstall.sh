@@ -16,3 +16,6 @@ sudo "$(dirname "$0")/uninstall_vapor.sh"
 
 # 卸载 nvm
 sudo "$(dirname "$0")/uninstall_nvm.sh"
+
+# 降级用户
+sudo "$(dirname "$0")/uninstall_host.sh"
