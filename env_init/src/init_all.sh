@@ -7,6 +7,10 @@ g='\033[32m'
 b='\033[34m'
 n='\033[0m'
 
+# 设置用户和数据目录
+echo -e "${b}设置用户和数据目录...${n}"
+sudo "$(dirname "$0")/init_host.sh"
+
 # 安装 expect
 echo -e "${b}检查 expect 是否已安装...${n}"
 if ! command -v expect &> /dev/null; then
