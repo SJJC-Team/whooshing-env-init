@@ -23,7 +23,7 @@ echo -e "${b}------------------- Vault 初始化 -------------------${n}"
 # 安装 vault
 echo -e "${b}安装 vault:${n}"
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" -y
+sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main" -y
 sudo apt-get update && sudo apt-get install vault -y
 echo -e "${g}Vault 安装完成${n}"
 
