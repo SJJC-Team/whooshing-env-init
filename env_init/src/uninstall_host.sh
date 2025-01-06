@@ -15,7 +15,8 @@ if id -u woo > /dev/null 2>&1; then usermod -G woo woo; fi
 if [ -f /home/woo/.env ]; then 
     source /home/woo/.env
     echo -e "${g}备份数据目录${n}"
-    mv $WHOOSHING_DATA_DIR $WHOOSHING_DATA_DIR-$(date +%Y%m%d%H%M%S)
+    mkdir -p $WHOOSHING_DATA_DIR.bak
+    mv $WHOOSHING_DATA_DIR $WHOOSHING_DATA_DIR.bak/$(date +%Y%m%d%H%M%S)
     sudo rm -f /home/woo/.env
 else echo -e "${b}/home/woo/.env 文件不存在, 跳过...${n}"; fi
 
