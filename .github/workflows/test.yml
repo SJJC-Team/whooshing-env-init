@@ -30,10 +30,15 @@ jobs:
           echo -e "授权完成"
           cd src
 
+      - name: Prepare Folders
+        run: |
+          mkdir -p /root
+          mkdir -p /data
+
       - name: Install
         run: |
           cd env_init/src
-          ./init_all.sh
+          ./init_all.sh /data/whooshing
 
       - name: Clean
         run: | 
