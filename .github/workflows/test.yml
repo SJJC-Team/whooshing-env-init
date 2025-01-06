@@ -31,8 +31,12 @@ jobs:
           cd src
       
       - name: Clean
-        run: ./uninstall.sh
+        run: | 
+          cd env_init/src
+          ./uninstall.sh
 
       - name: Install
-        run: ./install.sh
+        run: |
+          cd env_init/src
+          ./install.sh
 
