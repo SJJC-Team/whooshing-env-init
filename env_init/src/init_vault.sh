@@ -61,17 +61,20 @@ for ((i=0; i<$threshold; i++)); do
 done
 echo -e "\n${g}Vault 已成功解封${n}"
 
+echo -e "\n${b}写入到环境变量${n}"
+echo "export WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
+echo "export VAULT_ADDR='unix:///opt/vault/vault.sock'" >> /home/woo/.env
+echo "export VAULT_TOKEN=\$WHOOSHING_VAULT_ROOT_TOKEN" >> /home/woo/.env
+
+source /home/woo/.env
+
 vault login $root_token > /dev/null 2>&1 || { echo -e "${r}错误: vault 登陆失败！${n}" >&2; exit 1; }
 
 echo -e "${b}设置模块备份引擎...${n}"
 vault secrets enable -path="module-bak" -version=2 kv
 
-echo -e "\n${b}写入到环境变量${n}"
-echo "export WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
-echo "export VAULT_ADDR='unix:///opt/vault/vault.sock'" >> /home/woo/.env
-echo "export VAULT_TOKEN=\$WHOOSHING_VAULT_ROOT_TOKEN" >> /home/woo/.env
-chown root:root /home/woo/.env
-chmod 600 /home/woo/.env
+usermod -aG vault woo
+chmod 660 /opt/vault/vault.sock
 
 echo -e "${b}安装 medusa...${n}"
 mkdir /home/woo/.medusa
@@ -87,7 +90,7 @@ chown -R root:whooshing /home/woo/.medusa
 chmod -R 750 /home/woo/.medusa
 
 if [[ $noenter = true ]]; then
-    echo -e "${g}请记下您的主密钥切片，以及 root 令牌:${n}"
+    echo -e "${g}请记下您的主密钥切片${r}(系统永远不会记录这些密钥切片，如果遗失，你将无法恢复数据)${n}"
     echo -e "\n${b}Unseal Keys:${n}"; for key in "${keys[@]}"; do echo "$key"; done
     read -p "按回车继续..."
 fi
