@@ -15,6 +15,11 @@ echo -e "${b}正在卸载 Vault...${n}"
 if sudo systemctl is-active --quiet vault; then sudo systemctl stop vault; fi
 sudo apt-get remove --purge vault -y
 sudo rm -rf /etc/vault.d
+
+if id -nG woo | grep -qw vault; then sudo gpasswd -d woo vault; fi
+if id "vault" &>/dev/null; then sudo userdel vault; fi
+if getent group vault &>/dev/null; then sudo groupdel vault; fi
+
 if [[ $noenter = true ]]; then ans=y
 else echo -e -n "${r}删除 Vault 的数据？(y/n): ${n}"; read -p "" ans; fi
 if [[ $ans = y ]]; then

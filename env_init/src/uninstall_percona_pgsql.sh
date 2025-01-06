@@ -24,7 +24,10 @@ sudo apt remove percona-postgresql-17* percona-patroni percona-pgbackrest percon
 echo -e "${b}删除 PostgreSQL...${n}"
 sudo apt-get --purge remove postgresql postgresql-* -y
 
-echo -e "${b}清除数据目录...${n}"
+echo -e "${b}清除用户和数据目录...${n}"
+if id -nG woo | grep -qw postgres; then sudo gpasswd -d woo postgres; fi
+if id "postgres" &>/dev/null; then sudo userdel postgres; fi
+if getent group postgres &>/dev/null; then sudo groupdel postgres; fi
 rm -rf /data/percona
 rm -rf /etc/postgresql
 echo -e "${b}完成${n}"

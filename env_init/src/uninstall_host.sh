@@ -14,10 +14,12 @@ if id -u woo > /dev/null 2>&1; then usermod -G woo woo; fi
 
 if [ -f /home/woo/.env ]; then 
     source /home/woo/.env
-    echo -e "${g}备份数据目录${n}"
-    mkdir -p $WHOOSHING_DATA_DIR.bak
-    mv $WHOOSHING_DATA_DIR $WHOOSHING_DATA_DIR.bak/$(date +%Y%m%d%H%M%S)
     sudo rm -f /home/woo/.env
-else echo -e "${b}/home/woo/.env 文件不存在, 跳过...${n}"; fi
+    if [ -n "$WHOOSHING_DATA_DIR" ] && [ -d "$WHOOSHING_DATA_DIR" ]; then
+        echo -e "${g}备份和清理数据目录${n}"
+        mkdir -p $WHOOSHING_DATA_DIR.bak
+        mv $WHOOSHING_DATA_DIR $WHOOSHING_DATA_DIR.bak/$(date +%Y%m%d%H%M%S)
+    else echo -e "${g}数据目录不存在,跳过备份...${n}"; fi
+else echo -e "${b}环境文件不存在, 跳过...${n}"; fi
 
 echo -e "${b}------------------- 用户权限禁用 完成 -------------------${n}"
