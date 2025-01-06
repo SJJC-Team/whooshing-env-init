@@ -33,7 +33,7 @@ jobs:
       - name: Install
         run: |
           cd env_init/src
-          ./install.sh
+          ./init_all.sh
 
       - name: Clean
         run: | 
