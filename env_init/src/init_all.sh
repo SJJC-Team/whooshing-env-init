@@ -22,6 +22,10 @@ if ! command -v expect &> /dev/null; then
     echo -e "${g}expect 安装成功${n}"
 else echo -e "${g}expect 已安装${n}"; fi
 
+# 安装 yq
+echo -e "${b}安装 yq${n}"
+wget https://github.com/mikefarah/yq/releases/download/v4.45.1/yq_linux_$(dpkg --print-architecture) -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+
 # 安装 nvm
 echo -e "${b}检查 nvm 是否已安装...${n}"
 if command -v nvm &> /dev/null; then
