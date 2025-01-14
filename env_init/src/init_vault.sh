@@ -41,7 +41,7 @@ echo -e "${g}你选择的主密钥分片数量是：$segment${n}"
 if [[ $noenter = true ]]; then threshold=4;
 else threshold=$(read_integer "解密所需的最少切片数量(4): " 4 $segment); fi
 echo -e "${g}你选择的主密钥最少解密数量是：$threshold${n}"
-export VAULT_ADDR='unix:///opt/vault/vault.sock'
+export VAULT_ADDR='http://127.0.0.1:9412'
 set +e; vault_output=$(vault operator init -key-shares=$segment -key-threshold=$threshold 2>&1)
 keys=($(echo "$vault_output" | grep -oP 'Unseal Key \d+: \K[^\n]+'))
 root_token=$(echo "$vault_output" | grep -oP 'Initial Root Token: \K.*'); set -e
@@ -63,8 +63,7 @@ echo -e "\n${g}Vault 已成功解封${n}"
 
 echo -e "\n${b}写入到环境变量${n}"
 echo "export WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
-echo "export VAULT_ADDR='unix:///opt/vault/vault.sock'" >> /home/woo/.env
-echo "export VAULT_TOKEN=\$WHOOSHING_VAULT_ROOT_TOKEN" >> /home/woo/.env
+echo "export VAULT_ADDR=http://127.0.0.1:9412" >> /home/woo/.env
 
 source /home/woo/.env
 
@@ -73,8 +72,8 @@ vault login $root_token > /dev/null 2>&1 || { echo -e "${r}错误: vault 登陆�
 echo -e "${b}设置模块备份引擎...${n}"
 vault secrets enable -path="module-bak" -version=2 kv
 
-usermod -aG vault woo
-chmod 660 /opt/vault/vault.sock
+# usermod -aG vault woo
+# chmod 660 /opt/vault/vault.sock
 
 echo -e "${b}安装 medusa...${n}"
 mkdir /home/woo/.medusa
