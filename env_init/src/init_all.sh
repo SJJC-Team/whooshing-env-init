@@ -25,6 +25,7 @@ else echo -e "${g}expect 已安装${n}"; fi
 # 安装 yq
 echo -e "${b}安装 yq${n}"
 wget https://github.com/mikefarah/yq/releases/download/v4.45.1/yq_linux_$(dpkg --print-architecture) -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+apt install yamllint -y
 
 # 安装 nvm
 echo -e "${b}检查 nvm 是否已安装...${n}"

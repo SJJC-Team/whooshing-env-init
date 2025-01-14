@@ -13,10 +13,6 @@ storage "file" {
   path = "/opt/vault/data"
 }
 
-listener "unix" {
-  address = "/opt/vault/vault.sock"
-}
-
 listener "tcp" {
   address = "127.0.0.1:9412"
   tls_disable = 1
