@@ -5,9 +5,9 @@
 - [**Nodejs 23(nvm)**](https://nodejs.org/en/download)
 - [**Swift 6.1.0(swiftly)**](https://swiftlang.github.io/swiftly/)
 - [**Vapor 18.7.5**](https://docs.vapor.codes/install/linux/)
-- [**PM2 5.4.3**](https://pm2.keymetrics.io/)
+- [**PM2 6.0.5**](https://pm2.keymetrics.io/)
 - [**Vault 1.18.3**](https://developer.hashicorp.com/vault/docs/install)
-- [**Percona PostgreSQL 17**](https://percona.github.io/pg_tde/main/install.html)
+- [**Percona PostgreSQL 17.4**](https://percona.github.io/pg_tde/main/install.html)
 - [**Nginx 1.28.0**](https://nginx.org/en/docs/install.html)
 
 
