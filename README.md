@@ -20,9 +20,7 @@
 在 root 环境下运行脚本:
 
 ```shell
-wget https://raw.githubusercontent.com/SJJC-Team/whooshing-env-init/refs/heads/develop/env_init/init.sh
-chmod +x init.sh
-./init.sh
+wget https://raw.githubusercontent.com/SJJC-Team/whooshing-env-init/refs/heads/develop/env_init/init.sh; chmod +x init.sh; ./init.sh; rm -f init.sh
 ```
 以上会创建默认的 whooshing 数据目录，位于 ```/whooshing```, 若你想使用不同的数据目录，可以改为运行 ```sudo ./init.sh /path/to/data_dir```
 
