@@ -7,7 +7,7 @@ g='\033[32m'
 b='\033[34m'
 n='\033[0m'
 
-data_dir=${1:-/whooshing}
+data_dir=${1:-/data/whooshing}
 
 # 定义清理函数
 cleanup() {
