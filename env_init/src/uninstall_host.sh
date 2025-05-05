@@ -22,4 +22,7 @@ if [ -f /home/woo/.env ]; then
     else echo -e "${g}数据目录不存在,跳过备份...${n}"; fi
 else echo -e "${b}环境文件不存在, 跳过...${n}"; fi
 
+echo -e "${b}清理 apt 缓存${n}"
+apt-get autoremove -y
+
 echo -e "${b}------------------- 用户权限禁用 完成 -------------------${n}"

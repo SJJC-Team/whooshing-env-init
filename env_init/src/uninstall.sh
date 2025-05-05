@@ -12,10 +12,13 @@ sudo "$(dirname "$0")/uninstall_vault.sh" -n
 sudo "$(dirname "$0")/uninstall_vapor.sh"
 
 # 卸载 pm2
-# sudo "$(dirname "$0")/uninstall_pm2.sh"
+sudo "$(dirname "$0")/uninstall_pm2.sh"
 
 # 卸载 nvm
 sudo "$(dirname "$0")/uninstall_nvm.sh"
+
+# 卸载 nginx
+sudo "$(dirname "$0")/uninstall_nginx.sh"
 
 # 降级用户
 sudo "$(dirname "$0")/uninstall_host.sh"

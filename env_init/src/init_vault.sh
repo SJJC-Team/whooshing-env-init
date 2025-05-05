@@ -62,7 +62,11 @@ done
 echo -e "\n${g}Vault 已成功解封${n}"
 
 echo -e "\n${b}写入到环境变量${n}"
+echo "WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
 echo "export WHOOSHING_VAULT_ROOT_TOKEN=$root_token" >> /home/woo/.env
+echo "VAULT_TOKEN=$root_token" >> /home/woo/.env
+echo "export VAULT_TOKEN=$root_token" >> /home/woo/.env
+echo "VAULT_ADDR=http://127.0.0.1:9412" >> /home/woo/.env
 echo "export VAULT_ADDR=http://127.0.0.1:9412" >> /home/woo/.env
 
 source /home/woo/.env
