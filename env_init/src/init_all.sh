@@ -55,3 +55,6 @@ else echo -e "${g}vault 已安装${n}"; fi
 # 安装 percona postgresql
 sudo "$(dirname "$0")/uninstall_percona_pgsql.sh"
 sudo "$(dirname "$0")/init_percona_pgsql.sh"
+
+# 安装 nginx
+sudo "$(dirname "$0")/init_nginx.sh"
