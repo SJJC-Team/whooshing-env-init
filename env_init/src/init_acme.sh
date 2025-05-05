@@ -19,6 +19,8 @@ zone_id=$4
 google_eab_keyId=$5
 # google 公共证书颁发机构的 HMAC 验证码
 google_eab_hmac=$6
+# whooshing 服务模块的根域名
+domain=$7
 
 acme_dir="/root/.acme.sh"
 acme="$acme_dir/acme.sh"
@@ -45,6 +47,11 @@ is_non_empty() {
     [ -n "$1" ]
 }
 
+is_domain() {
+    local domain="$1"
+    [[ "$domain" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$ ]]
+}
+
 cleanup() {
     echo -e ${r}发生错误，执行清理操作${n}
     rm -rf $acme_dir
@@ -63,6 +70,14 @@ else
     sed -i '/CF_Zone_ID=/d' /home/woo/.env
 
     rm -rf $acme_dir
+
+    if ! is_domain "$email"; then
+        echo -e ${b}请提供一个域名，将作为 whooshing 服务的根域名${n}
+        ask_until_valid "域名：" is_domain
+        domain="$VALID_INPUT"
+    fi
+
+    echo -e ${g}将使用域名 $domain 作为所有 Whooshing 服务的根域名${n}
 
     if ! is_valid_email "$email"; then
         echo -e ${r}初始化 acme 却没有提供有效的邮箱${n}
@@ -109,6 +124,8 @@ else
     echo "export CF_Account_ID=$account_id" >> /home/woo/.env
     echo "CF_Zone_ID=$zone_id" >> /home/woo/.env
     echo "export CF_Zone_ID=$zone_id" >> /home/woo/.env
+    echo "WHOOSHING_ROOT_DOMAIN=$domain" >> /home/woo/.env
+    echo "export WHOOSHING_ROOT_DOMAIN=$domain" >> /home/woo/.env
 fi
 
 echo -e "${b}------------------- Acme 初始化 完成 -------------------${n}"
