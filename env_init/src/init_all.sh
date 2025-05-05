@@ -40,12 +40,6 @@ if ! command -v pm2 &> /dev/null; then
     sudo "$(dirname "$0")/init_pm2.sh"
 else echo -e "${g}pm2 已安装${n}"; fi
 
-# 安装 vapor
-echo -e "${b}检查 vapor 是否已安装...${n}"
-if ! command -v vapor &> /dev/null; then
-    sudo "$(dirname "$0")/init_vapor.sh"
-else echo -e "${g}vapor 已安装${n}"; fi
-
 # 安装 vault
 echo -e "${b}检查 vault 是否已安装...${n}"
 if ! command -v vault &> /dev/null; then
@@ -58,3 +52,9 @@ sudo "$(dirname "$0")/init_percona_pgsql.sh"
 
 # 安装 nginx
 sudo "$(dirname "$0")/init_nginx.sh"
+
+# 安装 vapor
+echo -e "${b}检查 vapor 是否已安装...${n}"
+if ! command -v vapor &> /dev/null; then
+    sudo "$(dirname "$0")/init_vapor.sh"
+else echo -e "${g}vapor 已安装${n}"; fi
