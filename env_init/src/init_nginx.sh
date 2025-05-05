@@ -24,6 +24,7 @@ fi
 
 echo -e "${b}配置 Nginx 文件${n}"
 mkdir -p $wooNginxPath
+sudo cp "$(dirname "$0")/mime.types" $nginxPath/mime.types
 sudo cp "$(dirname "$0")/nginx.conf" $nginxPath/nginx.conf
 chown -R woo:whooshing $nginxPath
 chmod -R 700 $nginxPath
