@@ -13,6 +13,7 @@ echo -e "${b}------------------- Vapor 卸载 -------------------${n}"
 echo -e "${b}正在卸载 Vapor...${n}"
 sudo rm -f /usr/local/bin/vapor
 sudo rm -rf /root/configs/toolbox
+sudo rm -rf /root/.vapor
 echo -e "${g}Vapor 卸载成功${n}"
 
 # 卸载 Swiftly

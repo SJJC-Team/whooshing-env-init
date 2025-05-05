@@ -52,6 +52,7 @@ echo -e "${b}检查 Vapor 是否已安装...${n}"
 if ! command -v vapor &> /dev/null; then
     echo -e "${b}Vapor 未安装，正在安装 Vapor Toolbox...${n}"
     mkdir -p /root/.vapor; cd /root/.vapor
+    rm -rf /root/.vapor/toolbox
     git clone https://github.com/vapor/toolbox.git
     cd toolbox
     git checkout 18.7.5
