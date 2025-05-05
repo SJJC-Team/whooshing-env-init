@@ -20,5 +20,8 @@ sudo "$(dirname "$0")/uninstall_nvm.sh"
 # 卸载 nginx
 sudo "$(dirname "$0")/uninstall_nginx.sh"
 
+# 卸载 acme
+sudo "$(dirname "$0")/uninstall_acme.sh"
+
 # 降级用户
 sudo "$(dirname "$0")/uninstall_host.sh"

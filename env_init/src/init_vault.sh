@@ -20,6 +20,10 @@ if [[ $1 = -n ]]; then noenter=true; else noenter=false; fi
 
 echo -e "${b}------------------- Vault 初始化 -------------------${n}"
 
+sed -i '/WHOOSHING_VAULT_ROOT_TOKEN=/d' /home/woo/.env
+sed -i '/VAULT_TOKEN=/d' /home/woo/.env
+sed -i '/VAULT_ADDR=/d' /home/woo/.env
+
 # 安装 vault
 echo -e "${b}安装 vault:${n}"
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -

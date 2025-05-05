@@ -22,6 +22,8 @@ else
     sudo apt install -y nginx
 fi
 
+sed -i '/WHOOSHING_NGINX_DIR=/d' /home/woo/.env
+
 echo -e "${b}配置 Nginx 文件${n}"
 mkdir -p $wooNginxPath
 sudo cp "$(dirname "$0")/mime.types" $nginxPath/mime.types
