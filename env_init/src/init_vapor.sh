@@ -55,7 +55,7 @@ if ! command -v vapor &> /dev/null; then
     rm -rf /root/.vapor/toolbox
     git clone https://github.com/vapor/toolbox.git
     cd toolbox
-    git checkout 18.7.5
+    git fetch --tags && git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
     make install
     rm -rf /root/.vapor
     echo -e "${g}Vapor 安装成功${n}"
