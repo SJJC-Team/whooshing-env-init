@@ -9,6 +9,7 @@
 - [**Vault 1.18.3**](https://developer.hashicorp.com/vault/docs/install)
 - [**Percona PostgreSQL 17.4**](https://percona.github.io/pg_tde/main/install.html)
 - [**Nginx 1.28.0**](https://nginx.org/en/docs/install.html)
+- [**Acme.sh 3.1.1**](https://github.com/acmesh-official/acme.sh)
 
 
 见[主项目](https://github.com/SJJC-Team/whooshing)
@@ -33,7 +34,8 @@ pm2 --version; echo ------------------
 vapor --version; echo ------------------
 psql --version; echo ------------------
 vault --version; echo ------------------
-nginx -version
+nginx -version; echo ------------------
+/root/.acme.sh/acme.sh --version
 ```
 
 ## **联系方式**
