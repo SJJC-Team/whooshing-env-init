@@ -61,3 +61,6 @@ echo -e "${b}检查 vapor 是否已安装...${n}"
 if ! command -v vapor &> /dev/null; then
     sudo "$(dirname "$0")/init_vapor.sh"
 else echo -e "${g}vapor 已安装${n}"; fi
+
+# 安装 wsm
+sudo "$(dirname "$0")/init_wsm.sh"
