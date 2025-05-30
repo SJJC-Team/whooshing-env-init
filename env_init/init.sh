@@ -19,11 +19,6 @@ cleanup() {
 # 设置 trap 捕获 EXIT 信号，确保清理函数总会执行
 trap cleanup EXIT
 
-# 授权 src 文件夹中的所有 sh 文件
-echo -e "${b}正在授权 src 文件夹中的所有 sh 文件...${n}"
-find "$(dirname "$0")" -type f -name "*.sh" -exec chmod +x {} \;
-echo -e "${g}授权完成${n}"
-
 sudo rm -rf /root/.whooshing
 sudo mkdir /root/.whooshing
 cd /root/.whooshing
@@ -31,6 +26,11 @@ cd /root/.whooshing
 echo -e "${b}克隆仓库...${n}"
 git clone https://github.com/SJJC-Team/whooshing-env-init.git
 cd whooshing-env-init/env_init
+
+# 授权 src 文件夹中的所有 sh 文件
+echo -e "${b}正在授权 src 文件夹中的所有 sh 文件...${n}"
+find "$(dirname "$0")" -type f -name "*.sh" -exec chmod +x {} \;
+echo -e "${g}授权完成${n}"
 
 echo -e "${b}运行卸载程序...${n}"
 sudo src/uninstall.sh
