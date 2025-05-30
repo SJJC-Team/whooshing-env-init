@@ -21,13 +21,80 @@ trap cleanup EXIT
 
 source /home/woo/.env
 
+
+
+
+LABEL="swift"
+SWIFT_VERSION="6.1"
+
+set - e
+
+# ------------------------------------------------
+
+# Expand system name and version
+OS_NAME=""
+OS_VERSION=""
+
+UNAME_S=$(uname -s)
+
+case "$UNAME_S" in
+  Darwin)
+    # macOS or iOS (simulator or device via cross-compile)
+    if [[ "$(uname -m)" == "x86_64" || "$(uname -m)" == "arm64" ]]; then
+      PRODUCT_NAME=$(sw_vers -productName)
+      PRODUCT_VERSION=$(sw_vers -productVersion)
+      if [[ "$PRODUCT_NAME" == "macOS" || "$PRODUCT_NAME" == "Mac OS X" ]]; then
+        OS_NAME="macos"
+        OS_VERSION="$PRODUCT_VERSION"
+      else
+        OS_NAME="ios"  # fallback
+        OS_VERSION="unknown"
+      fi
+    fi
+    ;;
+  Linux)
+    # Check for Ubuntu, Debian, etc.
+    if command -v lsb_release >/dev/null 2>&1; then
+      OS_NAME=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
+      OS_VERSION=$(lsb_release -rs)
+    elif [ -f /etc/os-release ]; then
+      # Fallback for containers or Alpine
+      . /etc/os-release
+      OS_NAME=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
+      OS_VERSION=$VERSION_ID
+    else
+      OS_NAME="linux"
+      OS_VERSION="unknown"
+    fi
+    ;;
+  *)
+    OS_NAME="unknown"
+    OS_VERSION="unknown"
+    ;;
+esac
+
+# Format with underscores and lowercase
+OS_NAME_CLEAN=$(echo "$OS_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+OS_VERSION_CLEAN=$(echo "$OS_VERSION" | tr '[:upper:]' '[:lower:]' | tr '.' '-')
+
+OS="${OS_NAME_CLEAN}-${OS_VERSION_CLEAN}"
+
+# ------------------------------------------------
+
+ARCH=$(uname -m)
+BUNDLE_NAME="${OS}-${ARCH}-${LABEL}-${SWIFT_VERSION}.tar.gz"
+
+
+
+
+
 rm -rf ~/.wsm
 mkdir ~/.wsm
 
 echo -e "${b}下载 wsm(Whooshing System Manager)...${n}"
 
-wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-wsm-ubuntu24.04-$(uname -m)-static.tar.gz -O ~/.wsm/woo-sys-wsm-ubuntu24.04-$(uname -m)-static.tar.gz
-tar -xzvf ~/.wsm/woo-sys-wsm-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
+wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-wsm-${BUNDLE_NAME} -O ~/.wsm/woo-sys-wsm-${BUNDLE_NAME}
+tar -xzvf ~/.wsm/woo-sys-wsm-${BUNDLE_NAME} -C ~/.wsm
 
 echo -e "${b}安装 wsm${n}"
 
@@ -42,8 +109,8 @@ chmod 750 /usr/local/bin/wsm
 
 echo -e "${b}下载 manager 模块...${n}"
 
-wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-manager-ubuntu24.04-$(uname -m)-static.tar.gz -O ~/.wsm/woo-sys-manager-ubuntu24.04-$(uname -m)-static.tar.gz
-tar -xzvf ~/.wsm/woo-sys-manager-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
+wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-manager-${BUNDLE_NAME} -O ~/.wsm/woo-sys-manager-${BUNDLE_NAME}
+tar -xzvf ~/.wsm/woo-sys-manager-${BUNDLE_NAME} -C ~/.wsm
 
 echo -e "${b}配置 manager${n}"
 
