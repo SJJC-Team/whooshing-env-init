@@ -26,8 +26,8 @@ mkdir ~/.wsm
 
 echo -e "${b}下载 wsm(Whooshing System Manager)...${n}"
 
-wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/wsm-ubuntu24.04-$(uname -m)-static.tar.gz -O ~/.wsm/wsm-ubuntu24.04-$(uname -m)-static.tar.gz
-tar -xzvf ~/.wsm/wsm-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
+wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-wsm-ubuntu24.04-$(uname -m)-static.tar.gz -O ~/.wsm/woo-sys-wsm-ubuntu24.04-$(uname -m)-static.tar.gz
+tar -xzvf ~/.wsm/woo-sys-wsm-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
 
 echo -e "${b}安装 wsm${n}"
 
@@ -42,8 +42,8 @@ chmod 750 /usr/local/bin/wsm
 
 echo -e "${b}下载 manager 模块...${n}"
 
-wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/manager-ubuntu24.04-$(uname -m)-static.tar.gz -O ~/.wsm/manager-ubuntu24.04-$(uname -m)-static.tar.gz
-tar -xzvf ~/.wsm/manager-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
+wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-manager-ubuntu24.04-$(uname -m)-static.tar.gz -O ~/.wsm/woo-sys-manager-ubuntu24.04-$(uname -m)-static.tar.gz
+tar -xzvf ~/.wsm/woo-sys-manager-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
 
 echo -e "${b}配置 manager${n}"
 
