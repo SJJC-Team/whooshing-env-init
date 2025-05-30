@@ -32,7 +32,11 @@ tar -xzvf ~/.wsm/wsm-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
 echo -e "${b}安装 wsm${n}"
 
 rm -rf /usr/local/bin/wsm
-cp ~/.wsm/wsm /usr/local/bin/wsm
+rm -rf /opt/wsm
+mkdir /opt/wsm
+cp -r ~/.wsm/wsm /opt
+echo '#!/bin/bash
+/opt/wsm/wsm "$@"' | sudo tee /usr/local/bin/wsm > /dev/null
 chown root:whooshing /usr/local/bin/wsm
 chmod 750 /usr/local/bin/wsm
 
@@ -43,10 +47,9 @@ tar -xzvf ~/.wsm/manager-ubuntu24.04-$(uname -m)-static.tar.gz -C ~/.wsm
 
 echo -e "${b}配置 manager${n}"
 
-rm -rf "$WHOOSHING_DATA_DIR/.manager/web/bundle"
-mkdir -p "$WHOOSHING_DATA_DIR/.manager/web/bundle"
-cp ~/.wsm/pm2.config.json "$WHOOSHING_DATA_DIR/.manager/web/bundle/pm2.config.json"
-cp ~/.wsm/App "$WHOOSHING_DATA_DIR/.manager/web/bundle/App"
+rm -rf "$WHOOSHING_DATA_DIR/.manager/web"
+mkdir -p "$WHOOSHING_DATA_DIR/.manager/web"
+cp -r ~/.wsm/bundle "$WHOOSHING_DATA_DIR/.manager/web/bundle"
 
 echo -e "${b}正在设置权限${n}"
 
