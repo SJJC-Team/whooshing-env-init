@@ -24,25 +24,25 @@ if ! vault kv get root/woo > /dev/null 2>&1; then
 fi
 key=$(vault kv get -field=key root/woo 2>&1) || { echo -e "${r}发生错误: 无法获取 Vault 密钥！${n}" >&2; exit 1; }
 
-echo -e "${g}创建配置目录...${n}"
+echo -e "${b}创建配置目录...${n}"
 mkdir -p /root/configs
 cd /root/configs
 
-echo -e "${g}下载 Percona Release 包...${n}"
+echo -e "${b}下载 Percona Release 包...${n}"
 wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
 
-echo -e "${g}安装 Percona Release 包...${n}"
+echo -e "${b}安装 Percona Release 包...${n}"
 sudo dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
 
-echo -e "${g}更新包列表...${n}"
+echo -e "${b}更新包列表...${n}"
 sudo apt update
 
-echo -e "${g}设置 Percona PostgreSQL 仓库...${n}"
+echo -e "${b}设置 Percona PostgreSQL 仓库...${n}"
 sudo percona-release setup ppg-17
 
-echo -e "${g}安装 Percona PostgreSQL 服务器...${n}"
+echo -e "${b}安装 Percona PostgreSQL 服务器...${n}"
 sudo apt install percona-ppg-server-17 -y
-echo -e "${g}更新环境变量...${n}"
+echo -e "${b}更新环境变量...${n}"
 if ! grep -q '/usr/lib/postgresql/17/bin' /etc/profile; then
     echo 'export PATH=$PATH:/usr/lib/postgresql/17/bin' >> /etc/profile
     source /etc/profile
