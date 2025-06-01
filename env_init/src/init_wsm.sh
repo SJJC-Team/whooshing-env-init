@@ -9,7 +9,15 @@ n='\033[0m'
 
 echo -e "${b}------------------- WSM 初始化 -------------------${n}"
 
+# 定义清理函数
+cleanup() {
+    echo -e "${b}清理${n}"
+    # rm -rf ~/.wsm
+    echo -e "${g}清理完成.${n}"
+}
 
+# 设置 trap 捕获 EXIT 信号，确保清理函数总会执行
+trap cleanup EXIT
 
 source /home/woo/.env
 
