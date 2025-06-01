@@ -9,15 +9,7 @@ n='\033[0m'
 
 echo -e "${b}------------------- WSM 初始化 -------------------${n}"
 
-# 定义清理函数
-cleanup() {
-    echo -e "${b}清理${n}"
-    # rm -rf ~/.wsm
-    echo -e "${g}清理完成.${n}"
-}
 
-# 设置 trap 捕获 EXIT 信号，确保清理函数总会执行
-trap cleanup EXIT
 
 source /home/woo/.env
 
@@ -100,8 +92,8 @@ echo -e "${b}安装 wsm${n}"
 
 rm -rf /usr/local/bin/wsm
 rm -rf /opt/wsm
-mkdir /opt/wsm
-cp -r ~/.wsm/wsm /opt
+cp -r ~/.wsm/module/bundle /opt
+mv /opt/bundle /opt/wsm
 echo '#!/bin/bash
 /opt/wsm/wsm "$@"' | sudo tee /usr/local/bin/wsm > /dev/null
 chown root:whooshing /usr/local/bin/wsm
@@ -116,7 +108,7 @@ echo -e "${b}配置 manager${n}"
 
 rm -rf "$WHOOSHING_DATA_DIR/.manager/web"
 mkdir -p "$WHOOSHING_DATA_DIR/.manager/web"
-cp -r ~/.wsm/bundle "$WHOOSHING_DATA_DIR/.manager/web/bundle"
+cp -r ~/.wsm/module/bundle "$WHOOSHING_DATA_DIR/.manager/web/bundle"
 
 echo -e "${b}正在设置权限${n}"
 
