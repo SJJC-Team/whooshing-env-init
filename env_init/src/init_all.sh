@@ -8,10 +8,11 @@ b='\033[34m'
 n='\033[0m'
 
 data_dir=${1:-/data/whooshing}
+file_storage_dir=${2:-/data/file_storage}
 
 # 设置用户和数据目录
 echo -e "${b}设置用户和数据目录...${n}"
-sudo "$(dirname "$0")/init_host.sh" $data_dir
+sudo "$(dirname "$0")/init_host.sh" $data_dir $file_storage
 
 # 安装 acme
 sudo "$(dirname "$0")/init_acme.sh" $data_dir

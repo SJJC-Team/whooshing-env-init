@@ -8,11 +8,14 @@ b='\033[34m'
 n='\033[0m'
 
 data_dir=$1
+file_storage_dir=$2
 
 echo -e "${b}------------------- 用户权限初始化 -------------------${n}"
 
 if [ -z "$data_dir" ]; then echo -e "${r}错误: data_dir 未设置。${n}"; exit 1; fi
+if [ -z "$file_storage_dir" ]; then echo -e "${r}错误: file_storage_dir 未设置。${n}"; exit 1; fi
 if [ ! -d "$data_dir" ]; then mkdir -p "$data_dir"; fi
+if [ ! -d "$file_storage_dir" ]; then mkdir -p "$file_storage_dir"; fi
 
 if ! getent group whooshing > /dev/null; then groupadd whooshing; echo -e "${g}组 'whooshing' 已创建。${n}"
 else echo -e "${g}组 'whooshing' 已存在。${n}"; fi
@@ -22,9 +25,11 @@ if ! id -u woo > /dev/null 2>&1; then useradd -m woo; echo -e "${g}用户 'woo' 
 
 usermod -aG whooshing woo
 usermod -aG whooshing root
-sudo chown -R root:whooshing "$data_dir"
+chown -R root:whooshing "$data_dir"
 chmod -R 770 "$data_dir"
-echo -e "${g}数据目录 '$data_dir' 的所有权已设置为 whooshing 组，且权限设置完成。${n}"
+chown -R root:whooshing "$file_storage_dir"
+chmod -R 770 "$file_storage_dir"
+echo -e "${g}数据目录 '$data_dir' 和 '$file_storage_dir' 的所有权已设置为 whooshing 组，且权限设置完成。${n}"
 
 usermod -s /bin/bash woo
 
@@ -33,6 +38,14 @@ rm -f /home/woo/.env
 touch /home/woo/.env && chown root:whooshing /home/woo/.env && chmod 660 /home/woo/.env
 echo "WHOOSHING_DATA_DIR=$data_dir" >> /home/woo/.env
 echo "export WHOOSHING_DATA_DIR=$data_dir" >> /home/woo/.env
+echo "WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> /home/woo/.env
+echo "export WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> /home/woo/.env
+echo "WHOOSHING_FILESTORAGE_OWNER_ID=$(id -u root)" >> /home/woo/.env
+echo "export WHOOSHING_FILESTORAGE_OWNER_ID=$(id -u root)" >> /home/woo/.env
+echo "WHOOSHING_FILESTORAGE_GROUP_ID=$(id -g whooshing)" >> /home/woo/.env
+echo "export WHOOSHING_FILESTORAGE_GROUP_ID=$(id -g whooshing)" >> /home/woo/.env
+echo "WHOOSHING_FILESTORAGE_RWX=504" >> /home/woo/.env
+echo "export WHOOSHING_FILESTORAGE_RWX=504" >> /home/woo/.env
 
 chown root:whooshing /home/woo/.env
 chmod 640 /home/woo/.env

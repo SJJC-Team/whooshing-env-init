@@ -8,6 +8,7 @@ b='\033[34m'
 n='\033[0m'
 
 data_dir=${1:-/data/whooshing}
+file_storage_dir=${2:-/data/file_storage}
 
 # 定义清理函数
 cleanup() {
@@ -36,6 +37,6 @@ echo -e "${b}运行卸载程序...${n}"
 sudo src/uninstall.sh
 
 echo -e "${b}运行初始化程序...${n}"
-sudo src/init_all.sh $data_dir
+sudo src/init_all.sh $data_dir $file_storage_dir
 
 echo -e "${g}环境初始化完成.${n}"
