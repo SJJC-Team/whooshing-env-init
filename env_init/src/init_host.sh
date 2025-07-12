@@ -42,8 +42,8 @@ echo "WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> /home/woo/.env
 echo "export WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> /home/woo/.env
 echo "WHOOSHING_FILESTORAGE_OWNER_ID=$(id -u root)" >> /home/woo/.env
 echo "export WHOOSHING_FILESTORAGE_OWNER_ID=$(id -u root)" >> /home/woo/.env
-echo "WHOOSHING_FILESTORAGE_GROUP_ID=$(id -g whooshing)" >> /home/woo/.env
-echo "export WHOOSHING_FILESTORAGE_GROUP_ID=$(id -g whooshing)" >> /home/woo/.env
+echo "WHOOSHING_FILESTORAGE_GROUP_ID=$(getent group whooshing | cut -d: -f3)" >> /home/woo/.env
+echo "export WHOOSHING_FILESTORAGE_GROUP_ID=$(getent group whooshing | cut -d: -f3)" >> /home/woo/.env
 echo "WHOOSHING_FILESTORAGE_RWX=504" >> /home/woo/.env
 echo "export WHOOSHING_FILESTORAGE_RWX=504" >> /home/woo/.env
 
