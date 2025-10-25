@@ -9,39 +9,37 @@ n='\033[0m'
 
 echo -e "${b}------------------- Vapor 初始化 -------------------${n}"
 
+# 安装 make 以及 vapor 工具链的编译依赖项
+echo -e "${b}正在安装 make...${n}"
+apt update
+apt install -y make build-essential clang binutils
+
 # 安装 Swiftly
 echo -e "${b}正在安装 Swiftly...${n}"
 
-mkdir -p /usr/local/bin/swiftly
-mkdir -p /usr/local/swiftly
-
 rm -rf /usr/local/swiftly
-cp -r "$(dirname "$0")/swiftly_configs" /usr/local/swiftly
 
+export SWIFTLY_HOME_DIR="/usr/local/swiftly"
+export SWIFTLY_BIN_DIR="/usr/local/swiftly/bin"
+export SWIFTLY_TOOLCHAINS_DIR="/usr/local/swiftly/toolchains"
 mkdir -p /root/.swiftly
-wget -P /root/.swiftly https://github.com/swiftlang/swiftly/releases/download/0.3.0/swiftly-$(uname -m)-unknown-linux-gnu
-mv /root/.swiftly/swiftly-$(uname -m)-unknown-linux-gnu /usr/local/bin/swiftly/swiftly
-chmod +x /usr/local/bin/swiftly/swiftly
+cd /root/.swiftly
+curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz && \
+tar zxf swiftly-$(uname -m).tar.gz && \
+./swiftly init -y --quiet-shell-followup && \
+. "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh" && \
+hash -r
 
-source /usr/local/swiftly/env.sh
-
-echo -e "${b}检查 swiftly 安装路径...${n}"
-if [ -d "/usr/local/bin/swiftly" ]; then
-    echo -e "${b}swiftly 安装路径存在${n}"
-    if [ ! -f /etc/profile.d/swiftly.sh ]; then sudo touch /etc/profile.d/swiftly.sh; fi
-    if ! grep -q "/usr/local/bin/swiftly" /etc/profile.d/swiftly.sh; then
-        echo -e "${b}将 swiftly 路径添加到系统环境变量中...${n}"
-        echo "export PATH=\$PATH:/usr/local/bin/swiftly" | sudo tee -a /etc/profile.d/swiftly.sh
-        source /etc/profile.d/swiftly.sh
-        echo -e "${g}swiftly 路径已添加${n}"
-    else echo -e "${g}swiftly 路径已存在于系统环境变量中${n}"; fi
-else
-    echo -e "${r}swiftly 安装失败${n}"; exit 1
-fi
+# 为所有用户设置 swiftly 初始化
+echo '. /usr/local/swiftly/env.sh' | sudo tee /etc/profile.d/swiftly.sh
+source /root/.profile
 
 # 安装 Swift
 echo -e "${b}正在安装最新版本的 Swift...${n}"
 swiftly install latest
+swiftly link -y
+
+rm -rf /root/.swiftly
 
 # 测试 swift 是否安装
 if ! command -v swift &> /dev/null; then echo -e "${r}Swift 安装失败${n}"; exit 1

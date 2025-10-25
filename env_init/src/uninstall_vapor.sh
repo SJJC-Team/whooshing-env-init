@@ -19,7 +19,6 @@ echo -e "${g}Vapor 卸载成功${n}"
 # 卸载 Swiftly
 echo -e "${b}正在卸载 Swiftly...${n}"
 sudo rm -rf /usr/local/swiftly
-sudo rm -rf /usr/local/bin/swiftly
 sudo rm -f /etc/profile.d/swiftly.sh
 echo -e "${g}Swiftly 卸载成功${n}"
 
