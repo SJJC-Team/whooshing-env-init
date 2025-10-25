@@ -3,14 +3,15 @@
 在受支持的 Linux 系统上准备系统环境，以安装 Whooshing。将安装的工具有：
 
 - [**Nodejs 23(nvm)**](https://nodejs.org/en/download)
-- [**Swift 6.1.0(swiftly)**](https://swiftlang.github.io/swiftly/)
-- [**Vapor 19.1.1**](https://docs.vapor.codes/install/linux/)
-- [**PM2 6.0.5**](https://pm2.keymetrics.io/)
-- [**Vault 1.18.3**](https://developer.hashicorp.com/vault/docs/install)
+- [**Swift 6.2.0(swiftly)**](https://swiftlang.github.io/swiftly/)
+- [**Vapor 19.2.0**](https://docs.vapor.codes/install/linux/)
+- [**PM2 6.0.13**](https://pm2.keymetrics.io/)
+- [**Vault 1.21.0**](https://developer.hashicorp.com/vault/docs/install)
 - [**Percona PostgreSQL 17.5**](https://percona.github.io/pg_tde/main/install.html)
-- [**Nginx 1.28.0**](https://nginx.org/en/docs/install.html)
-- [**Acme.sh 3.1.1**](https://github.com/acmesh-official/acme.sh)
+- [**Nginx 1.24.0**](https://nginx.org/en/docs/install.html)
+- [**Acme.sh 3.1.2**](https://github.com/acmesh-official/acme.sh)
 - [**Whooshing System Manager**](https://github.com/SJJC-Team/whooshing.system-manager)
+- [**Certi 1.0.10**](https://github.com/SJJC-Team/cloudflare-dns)
 
 
 见[主项目](https://github.com/SJJC-Team/whooshing)

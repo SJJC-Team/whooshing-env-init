@@ -11,5 +11,7 @@ echo -e "${b}------------------- Acme 卸载 -------------------${n}"
 
 acme_dir="/root/.acme.sh"
 rm -rf $acme_dir
+rm -rf "/etc/certi"
+rm -rf "/usr/local/bin/certi"
 
 echo -e "${b}------------------- Acme 卸载 完成 -------------------${n}"

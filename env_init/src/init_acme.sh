@@ -58,6 +58,8 @@ cleanup() {
     sed -i '/CF_Token=/d' /home/woo/.env
     sed -i '/CF_Account_ID=/d' /home/woo/.env
     sed -i '/CF_Zone_ID=/d' /home/woo/.env
+    sed -i '/CERTI_NGINX_DIR=/d' /home/woo/.env
+    sed -i '/CERTI_ROOT_DOMAIN=/d' /home/woo/.env
 }
 
 if [ -f "$acme" ]; 
@@ -126,6 +128,33 @@ else
     echo "export CF_Zone_ID=$zone_id" >> /home/woo/.env
     echo "WHOOSHING_ROOT_DOMAIN=$domain" >> /home/woo/.env
     echo "export WHOOSHING_ROOT_DOMAIN=$domain" >> /home/woo/.env
+
+    echo "CERTI_NGINX_DIR=/etc/nginx_sites" >> /home/woo/.env
+    echo "CERTI_ROOT_DOMAIN=$domain" >> /home/woo/.env
 fi
+
+BUNDLE_NAME="$("$(dirname "$0")/get_bundle_name.sh")"
+
+rm -rf ~/.certi
+mkdir ~/.certi
+
+echo -e "${b}下载 certi(CloudFlare Certificate)...${n}"
+
+wget https://github.com/SJJC-Team/cloudflare-dns/releases/latest/download/certi-${BUNDLE_NAME} -O ~/.certi/certi-${BUNDLE_NAME}
+tar -xzvf ~/.certi/certi-${BUNDLE_NAME} -C ~/.certi
+
+echo -e "${b}安装 certi${n}"
+
+rm -rf /usr/local/bin/certi
+rm -rf /etc/certi
+mkdir /etc/certi
+
+ln -s /home/woo/.env /etc/certi/env
+
+cp -r ~/.certi/module/bundle/* /etc/certi
+echo '#!/bin/bash
+/etc/certi/certi "$@"' | sudo tee /usr/local/bin/certi > /dev/null
+chown root:whooshing /usr/local/bin/certi
+chmod 750 /usr/local/bin/certi
 
 echo -e "${b}------------------- Acme 初始化 完成 -------------------${n}"
