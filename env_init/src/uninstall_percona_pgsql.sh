@@ -19,10 +19,15 @@ else
 fi
 
 echo -e "${b}删除 Percona PostgreSQL...${n}"
-sudo apt remove percona-postgresql-17* percona-patroni percona-pgbackrest percona-pgbadger percona-pgbouncer -y
+# 先检查是否有 percona-postgresql 包存在，若不存在则跳过
+if dpkg -l 'percona-postgresql-17*' 2>/dev/null | grep -q '^ii'; then
+    sudo apt remove percona-postgresql-17* percona-patroni percona-pgbackrest percona-pgbadger percona-pgbouncer -y
 
-echo -e "${b}删除 PostgreSQL...${n}"
-sudo apt-get --purge remove postgresql postgresql-* -y
+    echo -e "${b}删除 PostgreSQL...${n}"
+    sudo apt-get --purge remove postgresql postgresql-* -y
+else
+    echo -e "${g}Percona PostgreSQL 未安装，跳过${n}"
+fi
 
 echo -e "${b}清除用户和数据目录...${n}"
 if id -nG woo | grep -qw postgres; then sudo gpasswd -d woo postgres; fi
