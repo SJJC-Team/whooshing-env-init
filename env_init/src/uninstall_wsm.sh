@@ -1,16 +1,12 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "WSM 卸载"
 
-echo -e "${b}------------------- WSM 卸载 -------------------${n}"
-
-echo -e "${b}删除 wsm...${n}"
+log_info "删除 wsm..."
 rm -rf /usr/local/bin/wsm
 rm -rf /opt/wsm
 
-echo -e "${b}------------------- WSM 卸载 完成 -------------------${n}"
+log_success "WSM 卸载 完成"

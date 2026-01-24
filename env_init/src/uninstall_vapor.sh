@@ -1,25 +1,19 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "Vapor 卸载"
 
-echo -e "${b}------------------- Vapor 卸载 -------------------${n}"
-
-# 卸载 Vapor
-echo -e "${b}正在卸载 Vapor...${n}"
+log_info "正在卸载 Vapor..."
 sudo rm -f /usr/local/bin/vapor
 sudo rm -rf /root/configs/toolbox
 sudo rm -rf /root/.vapor
-echo -e "${g}Vapor 卸载成功${n}"
+log_success "Vapor 卸载成功"
 
-# 卸载 Swiftly
-echo -e "${b}正在卸载 Swiftly...${n}"
+log_info "正在卸载 Swiftly..."
 sudo rm -rf /usr/local/swiftly
 sudo rm -f /etc/profile.d/swiftly.sh
-echo -e "${g}Swiftly 卸载成功${n}"
+log_success "Swiftly 卸载成功"
 
-echo -e "${b}------------------- Vapor 卸载 完成 -------------------${n}"
+log_success "Vapor 卸载 完成"

@@ -1,73 +1,98 @@
 #!/bin/bash
+# 重构后的 init_all.sh
+
+# 解析脚本目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/config.sh"
 
 set -e
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "Whooshing 环境初始化"
 
 data_dir=${1:-/data/whooshing}
 file_storage_dir=${2:-/data/file_storage}
 
 # 设置用户和数据目录
-echo -e "${b}设置用户和数据目录...${n}"
-sudo "$(dirname "$0")/init_host.sh" $data_dir $file_storage_dir
+log_header "设置用户和数据目录"
+sudo "$SCRIPT_DIR/init_host.sh" "$data_dir" "$file_storage_dir"
 
 # 安装 acme
-sudo "$(dirname "$0")/init_acme.sh" $data_dir
+log_header "安装 ACME"
+sudo "$SCRIPT_DIR/init_acme.sh" "$data_dir"
 
 # 安装 expect
-echo -e "${b}检查 expect 是否已安装...${n}"
-if ! command -v expect &> /dev/null; then
-    echo -e "${b}expect 未安装，正在安装 expect...${n}"
+log_header "安装 Expect"
+if ! check_command expect; then
+    log_info "正在安装 expect..."
     sudo apt-get update
     sudo apt-get install expect -y
-    echo -e "${g}expect 安装成功${n}"
-else echo -e "${g}expect 已安装${n}"; fi
+    log_success "expect 安装成功"
+else
+    log_success "expect 已安装"
+fi
 
 # 安装 yq
-echo -e "${b}安装 yq${n}"
-wget https://github.com/mikefarah/yq/releases/download/v4.45.1/yq_linux_$(dpkg --print-architecture) -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
-apt install yamllint -y
+log_header "安装 YQ"
+log_info "正在安装 yq..."
+# 使用 dpkg 动态检测架构
+ARCH=$(dpkg --print-architecture)
+YQ_DL_URL="https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${ARCH}"
+wget "$YQ_DL_URL" -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+sudo apt install yamllint -y
 
 # 安装 nvm
-echo -e "${b}检查 nvm 是否已安装...${n}"
-if command -v nvm &> /dev/null; then
-    sudo "$(dirname "$0")/uninstall_nvm.sh"
+log_header "安装 NVM"
+if check_command nvm; then
+    # 如果 nvm 已存在，先卸载以确保干净安装（沿用原有逻辑）
+    sudo "$SCRIPT_DIR/uninstall_nvm.sh"
 fi
-sudo "$(dirname "$0")/init_nvm.sh"
+sudo "$SCRIPT_DIR/init_nvm.sh"
 
 # 安装 pm2
-echo -e "${b}检查 pm2 是否已安装...${n}"
-if ! command -v pm2 &> /dev/null; then
-    sudo "$(dirname "$0")/init_pm2.sh"
-else echo -e "${g}pm2 已安装${n}"; fi
+log_header "安装 PM2"
+if ! check_command pm2; then
+    sudo "$SCRIPT_DIR/init_pm2.sh"
+else
+    log_success "pm2 已安装"
+fi
 
 # 安装 OPA
-echo -e "${b}检查 OPA 是否已安装...${n}"
-if ! command -v opa &> /dev/null; then
-    sudo "$(dirname "$0")/init_opa.sh"
-else echo -e "${g}opa 已安装${n}"; fi
+log_header "安装 OPA"
+if ! check_command opa; then
+    sudo "$SCRIPT_DIR/init_opa.sh"
+else
+    log_success "opa 已安装"
+fi
 
 # 安装 vault
-echo -e "${b}检查 vault 是否已安装...${n}"
-if ! command -v vault &> /dev/null; then
-    sudo "$(dirname "$0")/init_vault.sh" -n
-else echo -e "${g}vault 已安装${n}"; fi
+log_header "安装 Vault"
+if ! check_command vault; then
+    sudo "$SCRIPT_DIR/init_vault.sh" -n
+else
+    log_success "vault 已安装"
+fi
 
 # 安装 percona postgresql
-sudo "$(dirname "$0")/uninstall_percona_pgsql.sh"
-sudo "$(dirname "$0")/init_percona_pgsql.sh"
+log_header "安装 Percona PostgreSQL"
+# 保持原有逻辑：先卸载再安装
+sudo "$SCRIPT_DIR/uninstall_percona_pgsql.sh"
+sudo "$SCRIPT_DIR/init_percona_pgsql.sh"
 
 # 安装 nginx
-sudo "$(dirname "$0")/init_nginx.sh"
+log_header "安装 Nginx"
+sudo "$SCRIPT_DIR/init_nginx.sh"
 
 # 安装 vapor
-echo -e "${b}检查 vapor 是否已安装...${n}"
-if ! command -v vapor &> /dev/null; then
-    sudo "$(dirname "$0")/init_vapor.sh"
-else echo -e "${g}vapor 已安装${n}"; fi
+log_header "安装 Vapor"
+if ! check_command vapor; then
+    sudo "$SCRIPT_DIR/init_vapor.sh"
+else
+    log_success "vapor 已安装"
+fi
 
 # 安装 wsm
-sudo "$(dirname "$0")/init_wsm.sh"
+log_header "安装 WSM"
+sudo "$SCRIPT_DIR/init_wsm.sh"
+
+log_header "环境初始化完成"

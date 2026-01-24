@@ -1,32 +1,24 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/config.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "Acme 初始化"
 
-# 注册邮箱，用于接收来自 cloudflare 的域名服务的各种通知
+# 参数
 email=$1
-# cloudflare API 的 token
 token=$2
-# cloudflare 的账号 ID
 account_id=$3
-# cloudflare 的 DNS ID
 zone_id=$4
-# google 公共证书颁发机构的 Key
 google_eab_keyId=$5
-# google 公共证书颁发机构的 HMAC 验证码
 google_eab_hmac=$6
-# whooshing 服务模块的根域名
 domain=$7
 
 acme_dir="/root/.acme.sh"
 acme="$acme_dir/acme.sh"
 
-echo -e "${b}------------------- Acme 初始化 -------------------${n}"
-
+# 输入验证的辅助函数
 ask_until_valid() {
     local prompt="$1"
     local validator_func="$2"
@@ -34,7 +26,7 @@ ask_until_valid() {
     while true; do
         read -rp "$prompt" input
         if "$validator_func" "$input"; then break
-        else echo "❌ 输入不合法，请重新输入。"; fi
+        else echo -e "${RED}❌ 输入不合法，请重新输入。${RESET}"; fi
     done
     VALID_INPUT="$input"
 }
@@ -52,104 +44,101 @@ is_domain() {
     [[ "$domain" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$ ]]
 }
 
-cleanup() {
-    echo -e ${r}发生错误，执行清理操作${n}
-    rm -rf $acme_dir
-    sed -i '/CF_Token=/d' /home/woo/.env
-    sed -i '/CF_Account_ID=/d' /home/woo/.env
-    sed -i '/CF_Zone_ID=/d' /home/woo/.env
-    sed -i '/CERTI_NGINX_DIR=/d' /home/woo/.env
-    sed -i '/CERTI_ROOT_DOMAIN=/d' /home/woo/.env
+cleanup_on_error() {
+    log_error "发生错误，执行清理操作"
+    rm -rf "$acme_dir"
+    # 清理环境变量
+    for var in CF_Token CF_Account_ID CF_Zone_ID CERTI_NGINX_DIR CERTI_ROOT_DOMAIN; do
+        sudo sed -i "/${var}=/d" "$ENV_FILE"
+    done
 }
 
-if [ -f "$acme" ]; 
-    then echo -e ${g}acme.sh 已存在，跳过安装${n} 
+if [ -f "$acme" ]; then 
+    log_success "acme.sh 已存在，跳过安装" 
 else
-    trap cleanup ERR
+    trap cleanup_on_error ERR
     
-    sed -i '/CF_Token=/d' /home/woo/.env
-    sed -i '/CF_Account_ID=/d' /home/woo/.env
-    sed -i '/CF_Zone_ID=/d' /home/woo/.env
+    # 启动前清理环境变量
+    for var in CF_Token CF_Account_ID CF_Zone_ID; do
+        sudo sed -i "/${var}=/d" "$ENV_FILE"
+    done
 
-    rm -rf $acme_dir
+    rm -rf "$acme_dir"
 
-    if ! is_domain "$email"; then
-        echo -e ${b}请提供一个域名，将作为 whooshing 服务的根域名${n}
+    # 如果提供的域名无效，则询问用户
+    if ! is_domain "$domain"; then
+        log_info "请提供一个域名，将作为 whooshing 服务的根域名"
         ask_until_valid "域名：" is_domain
         domain="$VALID_INPUT"
     fi
 
-    echo -e ${g}将使用域名 $domain 作为所有 Whooshing 服务的根域名${n}
+    log_success "将使用域名 $domain 作为所有 Whooshing 服务的根域名"
 
     if ! is_valid_email "$email"; then
-        echo -e ${r}初始化 acme 却没有提供有效的邮箱${n}
-        echo -e ${r}提供一个有效邮箱用于接收来自 cloudflare 的域名服务的各种通知${n}
+        log_error "初始化 acme 却没有提供有效的邮箱"
+        log_error "提供一个有效邮箱用于接收来自 cloudflare 的域名服务的各种通知"
         ask_until_valid "提供邮箱：" is_valid_email
         email="$VALID_INPUT"
     fi
 
-    echo -e ${b}将使用 $email 作为 cloudflare 域名服务通知邮箱${n}
+    log_info "将使用 $email 作为 cloudflare 域名服务通知邮箱"
 
     if [ -z "$token" ] || [ -z "$account_id" ] || [ -z "$zone_id" ]; then
-        echo -e ${r}初始化 acme 却没有提供 Cloudflare 的 API 令牌${n}
-        echo -e ${r}请前往 Cloudflare 平台获取 DNS 更新权限 "(CF_Token, CF_Account_ID, CF_Zone_ID)"${n}
+        log_error "初始化 acme 却没有提供 Cloudflare 的 API 令牌"
+        log_error "请前往 Cloudflare 平台获取 DNS 更新权限 (CF_Token, CF_Account_ID, CF_Zone_ID)"
         ask_until_valid "CF_Token: " is_non_empty; token="$VALID_INPUT"
         ask_until_valid "CF_Account_ID: " is_non_empty; account_id="$VALID_INPUT"
         ask_until_valid "CF_Zone_ID: " is_non_empty; zone_id="$VALID_INPUT"
     fi
 
-    echo -e ${b}Cloudflare API 令牌配置成功${n}
+    log_success "Cloudflare API 令牌配置成功"
 
     if [ -z "$google_eab_keyId" ] || [ -z "$google_eab_hmac" ]; then
-        echo -e ${r}初始化 acme 却没有提供 Google 公共证书颁发机构的 API 令牌${n}
-        echo -e ${r}前往您的 Google 云平台，运行下面的命令以取得 Google 免费公共证书申请的权限并获得密钥 "(eab-keyId, eab-b64MacKey)"${n}
-        echo -e ${r}gcloud publicca external-account-keys create${n}
+        log_error "初始化 acme 却没有提供 Google 公共证书颁发机构的 API 令牌"
+        log_error "前往您的 Google 云平台，运行下面的命令以取得 Google 免费公共证书申请的权限并获得密钥 (eab-keyId, eab-b64MacKey)"
+        log_error "gcloud publicca external-account-keys create"
         ask_until_valid "eab-keyId: " is_non_empty; google_eab_keyId="$VALID_INPUT"
         ask_until_valid "eab-b64MacKey: " is_non_empty; google_eab_hmac="$VALID_INPUT"
     fi
 
-    echo -e ${b}Google 公共证书颁发 API 令牌配置成功${n}
+    log_success "Google 公共证书颁发 API 令牌配置成功"
 
-    echo -e ${b}正在安装 acme.sh${n}
+    log_info "正在安装 acme.sh"
 
-    curl https://get.acme.sh | sh -s email=$email
+    curl https://get.acme.sh | sh -s email="$email"
 
-    $acme --upgrade --auto-upgrade
-    $acme --set-default-ca --server google
-    $acme --register-account --server google --eab-kid $google_eab_keyId  --eab-hmac-key $google_eab_hmac
+    "$acme" --upgrade --auto-upgrade
+    "$acme" --set-default-ca --server google
+    "$acme" --register-account --server google --eab-kid "$google_eab_keyId"  --eab-hmac-key "$google_eab_hmac"
 
-    echo -e ${b}写入环境变量${n}
-
-    echo "CF_Token=$token" >> /home/woo/.env
-    echo "export CF_Token=$token" >> /home/woo/.env
-    echo "CF_Account_ID=$account_id" >> /home/woo/.env
-    echo "export CF_Account_ID=$account_id" >> /home/woo/.env
-    echo "CF_Zone_ID=$zone_id" >> /home/woo/.env
-    echo "export CF_Zone_ID=$zone_id" >> /home/woo/.env
-    echo "WHOOSHING_ROOT_DOMAIN=$domain" >> /home/woo/.env
-    echo "export WHOOSHING_ROOT_DOMAIN=$domain" >> /home/woo/.env
-
-    echo "CERTI_NGINX_DIR=/etc/nginx_sites" >> /home/woo/.env
-    echo "CERTI_ROOT_DOMAIN=$domain" >> /home/woo/.env
+    log_info "写入环境变量"
+    update_env "CF_Token" "$token" "$ENV_FILE"
+    update_env "CF_Account_ID" "$account_id" "$ENV_FILE"
+    update_env "CF_Zone_ID" "$zone_id" "$ENV_FILE"
+    update_env "WHOOSHING_ROOT_DOMAIN" "$domain" "$ENV_FILE"
+    update_env "CERTI_NGINX_DIR" "/etc/nginx_sites" "$ENV_FILE"
+    update_env "CERTI_ROOT_DOMAIN" "$domain" "$ENV_FILE"
 fi
 
-BUNDLE_NAME="$("$(dirname "$0")/get_bundle_name.sh")"
+# 需要 get_bundle_name.sh
+BUNDLE_NAME="$("$SCRIPT_DIR/get_bundle_name.sh")"
 
 rm -rf ~/.certi
 mkdir ~/.certi
 
-echo -e "${b}下载 certi(CloudFlare Certificate)...${n}"
-
-wget https://github.com/SJJC-Team/cloudflare-dns/releases/latest/download/certi-${BUNDLE_NAME} -O ~/.certi/certi-${BUNDLE_NAME}
+log_info "下载 certi(CloudFlare Certificate)..."
+# URL hardcoded in original
+wget "https://github.com/SJJC-Team/cloudflare-dns/releases/latest/download/certi-${BUNDLE_NAME}" -O ~/.certi/certi-${BUNDLE_NAME}
 tar -xzvf ~/.certi/certi-${BUNDLE_NAME} -C ~/.certi
 
-echo -e "${b}安装 certi${n}"
+log_info "安装 certi"
 
 rm -rf /usr/local/bin/certi
 rm -rf /etc/certi
 mkdir /etc/certi
 
-ln -s /home/woo/.env /etc/certi/env
+# 软链接环境文件
+ln -s "$ENV_FILE" /etc/certi/env
 
 cp -r ~/.certi/module/bundle/* /etc/certi
 echo '#!/bin/bash
@@ -157,4 +146,4 @@ echo '#!/bin/bash
 chown root:whooshing /usr/local/bin/certi
 chmod 750 /usr/local/bin/certi
 
-echo -e "${b}------------------- Acme 初始化 完成 -------------------${n}"
+log_success "Acme 初始化 完成"

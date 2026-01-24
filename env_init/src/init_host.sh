@@ -1,53 +1,69 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/config.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "用户权限初始化"
 
 data_dir=$1
 file_storage_dir=$2
 
-echo -e "${b}------------------- 用户权限初始化 -------------------${n}"
+if [ -z "$data_dir" ]; then log_error "错误: data_dir 未设置。"; exit 1; fi
+if [ -z "$file_storage_dir" ]; then log_error "错误: file_storage_dir 未设置。"; exit 1; fi
 
-if [ -z "$data_dir" ]; then echo -e "${r}错误: data_dir 未设置。${n}"; exit 1; fi
-if [ -z "$file_storage_dir" ]; then echo -e "${r}错误: file_storage_dir 未设置。${n}"; exit 1; fi
-if [ ! -d "$data_dir" ]; then mkdir -p "$data_dir"; fi
-if [ ! -d "$file_storage_dir" ]; then mkdir -p "$file_storage_dir"; fi
+ensure_dir "$data_dir" "" ""
+ensure_dir "$file_storage_dir" "" ""
 
-if ! getent group whooshing > /dev/null; then groupadd whooshing; echo -e "${g}组 'whooshing' 已创建。${n}"
-else echo -e "${g}组 'whooshing' 已存在。${n}"; fi
+if ! getent group whooshing > /dev/null; then 
+    groupadd whooshing
+    log_success "组 'whooshing' 已创建。"
+else 
+    log_success "组 'whooshing' 已存在。"
+fi
 
-echo -e "${g}创建用户 'woo' 并设置权限...${n}"
-if ! id -u woo > /dev/null 2>&1; then useradd -m woo; echo -e "${g}用户 'woo' 已创建${n}"; fi
+log_info "创建用户 '${WHOOSHING_USER}' 并设置权限..."
+if ! id -u "$WHOOSHING_USER" > /dev/null 2>&1; then 
+    useradd -m "$WHOOSHING_USER"
+    log_success "用户 '${WHOOSHING_USER}' 已创建"
+fi
 
-usermod -aG whooshing woo
+usermod -aG whooshing "$WHOOSHING_USER"
 usermod -aG whooshing root
-chown -R root:whooshing "$data_dir"
+
+chown -R "root:whooshing" "$data_dir"
 chmod -R 770 "$data_dir"
-chown -R root:whooshing "$file_storage_dir"
+chown -R "root:whooshing" "$file_storage_dir"
 chmod -R 770 "$file_storage_dir"
-echo -e "${g}数据目录 '$data_dir' 和 '$file_storage_dir' 的所有权已设置为 whooshing 组，且权限设置完成。${n}"
+log_success "数据目录 '$data_dir' 和 '$file_storage_dir' 的所有权已设置为 whooshing 组，且权限设置完成。"
 
-usermod -s /bin/bash woo
+usermod -s /bin/bash "$WHOOSHING_USER"
 
-echo -e "${g}创建环境配置文件...${n}"
-rm -f /home/woo/.env
-touch /home/woo/.env && chown root:whooshing /home/woo/.env && chmod 660 /home/woo/.env
-echo "WHOOSHING_DATA_DIR=$data_dir" >> /home/woo/.env
-echo "export WHOOSHING_DATA_DIR=$data_dir" >> /home/woo/.env
-echo "WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> /home/woo/.env
-echo "export WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> /home/woo/.env
-echo "WHOOSHING_FILESTORAGE_OWNER_ID=$(id -u root)" >> /home/woo/.env
-echo "export WHOOSHING_FILESTORAGE_OWNER_ID=$(id -u root)" >> /home/woo/.env
-echo "WHOOSHING_FILESTORAGE_GROUP_ID=$(getent group whooshing | cut -d: -f3)" >> /home/woo/.env
-echo "export WHOOSHING_FILESTORAGE_GROUP_ID=$(getent group whooshing | cut -d: -f3)" >> /home/woo/.env
-echo "WHOOSHING_FILESTORAGE_RWX=504" >> /home/woo/.env
-echo "export WHOOSHING_FILESTORAGE_RWX=504" >> /home/woo/.env
+log_info "创建环境配置文件..."
+# 重置环境文件
+rm -f "$ENV_FILE"
+touch "$ENV_FILE"
+chown "root:whooshing" "$ENV_FILE"
+chmod 660 "$ENV_FILE"
 
-chown root:whooshing /home/woo/.env
-chmod 640 /home/woo/.env
+echo "WHOOSHING_DATA_DIR=$data_dir" >> "$ENV_FILE"
+echo "export WHOOSHING_DATA_DIR=$data_dir" >> "$ENV_FILE"
+echo "WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> "$ENV_FILE"
+echo "export WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> "$ENV_FILE"
 
-echo -e "${b}------------------- 用户权限初始化完成 -------------------${n}"
+OWNER_ID=$(id -u root)
+echo "WHOOSHING_FILESTORAGE_OWNER_ID=$OWNER_ID" >> "$ENV_FILE"
+echo "export WHOOSHING_FILESTORAGE_OWNER_ID=$OWNER_ID" >> "$ENV_FILE"
+
+GROUP_ID=$(getent group whooshing | cut -d: -f3)
+echo "WHOOSHING_FILESTORAGE_GROUP_ID=$GROUP_ID" >> "$ENV_FILE"
+echo "export WHOOSHING_FILESTORAGE_GROUP_ID=$GROUP_ID" >> "$ENV_FILE"
+
+echo "WHOOSHING_FILESTORAGE_RWX=504" >> "$ENV_FILE"
+echo "export WHOOSHING_FILESTORAGE_RWX=504" >> "$ENV_FILE"
+
+# 再次确保权限正确
+chown "root:whooshing" "$ENV_FILE"
+chmod 640 "$ENV_FILE"
+
+log_success "用户权限初始化完成"

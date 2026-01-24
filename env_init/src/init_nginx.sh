@@ -1,45 +1,31 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/config.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "Nginx 初始化"
 
-echo -e "${b}------------------- Nginx 初始化 -------------------${n}"
-
-nginxPath=/etc/nginx
-wooNginxPath=$nginxPath/whooshing-modules
-
-if command -v nginx >/dev/null 2>&1; then
-    echo -e "${g}Nginx 已经安装，跳过安装步骤${n}"
+log_info "检查 nginx 是否已安装..."
+if ! check_command nginx; then
+    log_info "nginx 未安装，正在安装 nginx..."
+    sudo apt-get update
+    sudo apt-get install nginx -y
+    log_success "nginx 安装成功"
 else
-    # 更新包管理器并安装 Nginx
-    echo -e "${b}更新包管理器...${n}"
-    sudo apt update
-    echo -e "${b}安装 Nginx...${n}"
-    sudo apt install -y nginx
+    log_success "nginx 已安装"
 fi
 
-sed -i '/WHOOSHING_NGINX_DIR=/d' /home/woo/.env
+log_info "配置 nginx..."
+sudo cp "$SCRIPT_DIR/nginx.conf" /etc/nginx/nginx.conf
+sudo cp "$SCRIPT_DIR/mime.types" /etc/nginx/mime.types
 
-echo -e "${b}配置 Nginx 文件${n}"
-mkdir -p $wooNginxPath
-sudo cp "$(dirname "$0")/mime.types" $nginxPath/mime.types
-sudo cp "$(dirname "$0")/nginx.conf" $nginxPath/nginx.conf
-chown -R woo:whooshing $nginxPath
-chmod -R 700 $nginxPath
+if [ -d "/etc/nginx_sites" ]; then
+    log_info "清理旧的配置目录 /etc/nginx_sites..."
+    sudo rm -rf "/etc/nginx_sites"
+fi
+ensure_dir "/etc/nginx_sites" "" ""
 
-echo -e "${b}将 Nginx 配置写入环境变量${n}"
-echo "WHOOSHING_NGINX_DIR=$wooNginxPath" >> /home/woo/.env
-echo "export WHOOSHING_NGINX_DIR=$wooNginxPath" >> /home/woo/.env
-source /home/woo/.env
-
-# 启动 Nginx 服务
-echo -e "${b}启动 Nginx 服务${n}"
+log_info "重启 nginx 服务..."
 sudo systemctl restart nginx
-sudo systemctl enable nginx
-
-echo -e "${g}Nginx 安装完成！${n}"
-echo -e "${b}------------------- Nginx 初始化 完成 -------------------${n}"
+log_success "Nginx 初始化 完成"

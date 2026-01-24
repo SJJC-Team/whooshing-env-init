@@ -1,28 +1,24 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+if [[ $1 = -n ]]; then noenter="-y"; else noenter=""; fi
 
-if [[ $1 = -n ]]; then noenter=true; else noenter=false; fi
+log_header "Vault 卸载"
 
-echo -e "${b}------------------- Vault 卸载 -------------------${n}"
-
-# 检查是否存在 Vault（包、服务、用户、组或配置/数据目录）
+# 检查是否存在 Vault
 found=false
-if dpkg -s vault &>/dev/null; then found=true; fi
+if check_command dpkg && dpkg -s vault &>/dev/null; then found=true; fi
 if systemctl list-unit-files --type=service | grep -q '^vault.service'; then found=true; fi
 if id "vault" &>/dev/null; then found=true; fi
 if getent group vault &>/dev/null; then found=true; fi
 if [ -d /etc/vault.d ] || [ -d /opt/vault ]; then found=true; fi
 
 if ! $found; then
-    echo -e "${b}未检测到 Vault 安装或相关文件/用户，跳过卸载。${n}"
+    log_info "未检测到 Vault 安装或相关文件/用户，跳过卸载。"
 else
-    echo -e "${b}正在卸载 Vault...${n}"
+    log_info "正在卸载 Vault..."
 
     # 停止并禁用服务（如果存在）
     if systemctl list-unit-files --type=service | grep -q '^vault.service'; then
@@ -33,15 +29,18 @@ else
     fi
 
     # 卸载包（如果已安装）
-    if dpkg -s vault &>/dev/null; then
+    if check_command dpkg && dpkg -s vault &>/dev/null; then
         sudo apt-get remove --purge vault -y
     else
-        echo -e "${b}Vault 包未安装，跳过 apt 卸载。${n}"
+        log_info "Vault 包未安装，跳过 apt 卸载。"
     fi
 
     # 删除配置目录（如果存在）
     if [ -d /etc/vault.d ]; then
-        sudo rm -rf /etc/vault.d
+        if confirm_action "是否删除 Vault 配置目录 (/etc/vault.d)？" "$noenter"; then
+            log_info "删除配置目录 /etc/vault.d..."
+            sudo rm -rf /etc/vault.d
+        fi
     fi
 
     # 删除用户/组（如果存在）并从组中移除 woo
@@ -57,27 +56,22 @@ else
 
     # 询问是否删除数据目录（如果存在）
     if [ -d /opt/vault ]; then
-        if [[ $noenter = true ]]; then ans=y
-        else
-            echo -e -n "${r}删除 Vault 的数据？(y/n): ${n}"
-            read -r ans
-        fi
-        if [[ $ans = y ]]; then
-            echo -e "${b}删除所有 Vault 的数据.${n}"
+        if confirm_action "是否删除 Vault 的数据 (/opt/vault)？" "$noenter"; then
+            log_info "删除所有 Vault 的数据..."
             sudo rm -rf /opt/vault
-        else
-            echo -e "${b}保留 /opt/vault。${n}"
         fi
     fi
 
     sudo systemctl daemon-reload
 fi
 
-echo -e "${b}删除 medusa...${n}"
+log_info "删除 medusa..."
 if [ -d /home/woo/.medusa ]; then
-    rm -rf /home/woo/.medusa
+    if confirm_action "是否删除 medusa 备份工具目录 (/home/woo/.medusa)？" "$noenter"; then
+        rm -rf /home/woo/.medusa
+    fi
 else
-    echo -e "${b}/home/woo/.medusa 未找到，跳过。${n}"
+    log_info "/home/woo/.medusa 未找到，跳过。"
 fi
 
-echo -e "${b}------------------- Vault 卸载 完成 -------------------${n}"
+log_success "Vault 卸载 完成"

@@ -1,17 +1,20 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/config.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "Pm2 初始化"
 
-echo -e "${b}------------------- Pm2 初始化 -------------------${n}"
+# 确保 NVM 可用
+export NVM_DIR="/usr/local/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-. nvm use 23
-echo -e "${b}安装 pm2...${n}"
+# 使用 config.sh 中的 NODE_VERSION
+nvm use "$NODE_VERSION"
+
+log_info "安装 pm2..."
 npm install pm2 -g
-pm2 jlist
 
-echo -e "${b}\n------------------- Pm2 初始化 完成 -------------------${n}"
+pm2 jlist
+log_success "Pm2 初始化 完成"

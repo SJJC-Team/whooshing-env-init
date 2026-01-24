@@ -1,17 +1,19 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "Acme 卸载"
 
-echo -e "${b}------------------- Acme 卸载 -------------------${n}"
+log_info "正在删除 acme.sh 安装目录..."
+if [ -d "/root/.acme.sh" ]; then
+    if confirm_action "是否删除 /root/.acme.sh 及其所有证书 (此操作不可逆)？" "$1"; then
+        rm -rf /root/.acme.sh
+    fi
+fi
 
-acme_dir="/root/.acme.sh"
-rm -rf $acme_dir
+log_info "正在删除 certi 配置..."
 rm -rf "/etc/certi"
 rm -rf "/usr/local/bin/certi"
 
-echo -e "${b}------------------- Acme 卸载 完成 -------------------${n}"
+log_success "Acme 卸载 完成"

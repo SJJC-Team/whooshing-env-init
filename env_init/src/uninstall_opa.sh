@@ -1,25 +1,21 @@
 #!/bin/bash
 
-# Define colors
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
 
-echo -e "${b}------------------- OPA 卸载 -------------------${n}"
+log_header "OPA 卸载"
 
-if [ -f "/usr/local/bin/opa" ]; then
-    echo -e "${b}正在删除 /usr/local/bin/opa...${n}"
-    sudo rm -f /usr/local/bin/opa
-    
-    if [ $? -eq 0 ]; then
-        echo -e "${g}OPA 删除成功${n}"
-    else
-        echo -e "${r}OPA 删除失败${n}"
-        exit 1
-    fi
+OPA_BIN="/usr/local/bin/opa"
+
+if [ -f "$OPA_BIN" ]; then
+    log_info "正在删除 $OPA_BIN..."
+    sudo rm -f "$OPA_BIN"
+    log_success "OPA 删除成功"
 else
-    echo -e "${g}OPA 未安装 (或不在 /usr/local/bin/opa)${n}"
+    log_info "OPA 未安装 (或不在 $OPA_BIN)"
 fi
 
-echo -e "${b}------------------- OPA 卸载 完成 -------------------${n}"
+# 不删除 .opa 目录，按需保留
+log_info "保留 .opa 配置目录 (如存在)"
+
+log_success "OPA 卸载 完成"

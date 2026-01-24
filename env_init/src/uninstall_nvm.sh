@@ -1,29 +1,25 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "Nvm 卸载"
 
-echo -e "${b}------------------- Nvm 卸载 -------------------${n}"
+log_info "1. 删除环境变量"
+# 只能在当前 shell unset，无法在父 shell unset
+unset NVM_DIR NVM_BIN NVM_CD_FLAGS NVM_RC_VERSION
 
-echo -e "${b}1. 删除环境变量${n}"
-rm -rf "$NVM_DIR"
-unset NVM_DIR
-unset NVM_BIN
-unset NVM_CD_FLAGS
-unset NVM_RC_VERSION
-
-echo -e "${b}2. 删除 nvm 工具${n}"
+log_info "2. 删除 nvm 工具"
 sudo rm -f /usr/local/bin/nvm
 sudo rm -rf /usr/local/nvm
 
-echo -e "${b}3. 更新用户的 .bashrc 文件${n}"
+log_info "3. 更新用户的 .bashrc 文件"
 for user_dir in /home/* /root; do
     user_bashrc="$user_dir/.bashrc"
-    sed -i '/. nvm use 23/d' "$user_bashrc"
+    if [ -f "$user_bashrc" ]; then
+        # 使用 sed 删除我们添加的行
+        sed -i '/. nvm use/d' "$user_bashrc"
+    fi
 done
 
-echo -e "${b}------------------- Nvm 卸载 完成 -------------------${n}"
+log_success "Nvm 卸载 完成"

@@ -1,61 +1,73 @@
 #!/bin/bash
 
-set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/config.sh"
 
-r='\033[31m'
-g='\033[32m'
-b='\033[34m'
-n='\033[0m'
+log_header "WSM 初始化"
 
-echo -e "${b}------------------- WSM 初始化 -------------------${n}"
-
-# 定义清理函数
+# 设置退出清理
 cleanup() {
-    echo -e "${b}清理${n}"
-    # rm -rf ~/.wsm
-    echo -e "${g}清理完成.${n}"
+    log_info "清理临时文件..."
+    rm -rf ~/.wsm
+    echo "清理完成."
 }
-
-# 设置 trap 捕获 EXIT 信号，确保清理函数总会执行
 trap cleanup EXIT
 
-source /home/woo/.env
+# 确保环境变量已加载
+if [ -f "$ENV_FILE" ]; then source "$ENV_FILE"; fi
+if [ -z "$WHOOSHING_DATA_DIR" ]; then
+    log_warn "WHOOSHING_DATA_DIR 未设置，尝试使用默认值 /data/whooshing"
+    WHOOSHING_DATA_DIR="/data/whooshing"
+fi
 
-BUNDLE_NAME="$("$(dirname "$0")/get_bundle_name.sh")"
+BUNDLE_NAME="$("$SCRIPT_DIR/get_bundle_name.sh")"
 
-rm -rf ~/.wsm
-mkdir ~/.wsm
+clean_wsm_temp() {
+    rm -rf ~/.wsm
+    mkdir ~/.wsm
+}
+clean_wsm_temp
 
-echo -e "${b}下载 wsm(Whooshing System Manager)...${n}"
+log_info "下载 wsm (Whooshing System Manager)..."
+# 使用 config 中的 WSM_VERSION 或默认值
+VERSION="${WSM_VERSION:-2.2.5}"
 
-wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-wsm-${BUNDLE_NAME} -O ~/.wsm/woo-sys-wsm-${BUNDLE_NAME}
+DOWNLOAD_URL="https://github.com/SJJC-Team/whooshing.system-manager/releases/download/${VERSION}/woo-sys-wsm-${BUNDLE_NAME}"
+
+log_info "下载 URL: $DOWNLOAD_URL"
+wget "$DOWNLOAD_URL" -O ~/.wsm/woo-sys-wsm-${BUNDLE_NAME}
 tar -xzvf ~/.wsm/woo-sys-wsm-${BUNDLE_NAME} -C ~/.wsm
 
-echo -e "${b}安装 wsm${n}"
-
+log_info "安装 wsm"
 rm -rf /usr/local/bin/wsm
 rm -rf /opt/wsm
-cp -r ~/.wsm/module/bundle /opt
-mv /opt/bundle /opt/wsm
+
+# 安装 WSM
+mkdir -p /opt/wsm
+cp -r ~/.wsm/module/bundle/* /opt/wsm/
+
 echo '#!/bin/bash
 /opt/wsm/wsm "$@"' | sudo tee /usr/local/bin/wsm > /dev/null
 chown root:whooshing /usr/local/bin/wsm
 chmod 750 /usr/local/bin/wsm
 
-echo -e "${b}下载 manager 模块...${n}"
-
-wget https://github.com/SJJC-Team/whooshing.system-manager/releases/latest/download/woo-sys-manager-${BUNDLE_NAME} -O ~/.wsm/woo-sys-manager-${BUNDLE_NAME}
+log_info "下载 manager 模块..."
+MANAGER_URL="https://github.com/SJJC-Team/whooshing.system-manager/releases/download/${VERSION}/woo-sys-manager-${BUNDLE_NAME}"
+log_info "Manager URL: $MANAGER_URL"
+wget "$MANAGER_URL" -O ~/.wsm/woo-sys-manager-${BUNDLE_NAME}
 tar -xzvf ~/.wsm/woo-sys-manager-${BUNDLE_NAME} -C ~/.wsm
 
-echo -e "${b}配置 manager${n}"
+log_info "配置 manager"
+MANAGER_WEB_DIR="$WHOOSHING_DATA_DIR/.manager/web"
+rm -rf "$MANAGER_WEB_DIR"
+mkdir -p "$MANAGER_WEB_DIR"
+cp -r ~/.wsm/module/bundle "$MANAGER_WEB_DIR/bundle"
 
-rm -rf "$WHOOSHING_DATA_DIR/.manager/web"
-mkdir -p "$WHOOSHING_DATA_DIR/.manager/web"
-cp -r ~/.wsm/module/bundle "$WHOOSHING_DATA_DIR/.manager/web/bundle"
+log_info "正在设置权限"
+MANAGER_DIR="$WHOOSHING_DATA_DIR/.manager"
+# 设置管理器权限
+sudo chown -R root:whooshing "$MANAGER_DIR"
+chmod -R 770 "$MANAGER_DIR"
 
-echo -e "${b}正在设置权限${n}"
-
-sudo chown -R root:whooshing "$WHOOSHING_DATA_DIR/.manager"
-chmod -R 770 "$WHOOSHING_DATA_DIR/.manager"
-
-echo -e "${b}------------------- WSM 初始化 完成 -------------------${n}"
+log_success "WSM 初始化 完成"
