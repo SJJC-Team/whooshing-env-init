@@ -20,10 +20,6 @@ log_info "配置 nginx..."
 sudo cp "$SCRIPT_DIR/nginx.conf" /etc/nginx/nginx.conf
 sudo cp "$SCRIPT_DIR/mime.types" /etc/nginx/mime.types
 
-if [ -d "/etc/nginx_sites" ]; then
-    log_info "清理旧的配置目录 /etc/nginx_sites..."
-    sudo rm -rf "/etc/nginx_sites"
-fi
 ensure_dir "/etc/nginx_sites" "" ""
 
 log_info "重启 nginx 服务..."
