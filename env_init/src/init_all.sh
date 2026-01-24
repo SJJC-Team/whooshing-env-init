@@ -44,6 +44,12 @@ if ! command -v pm2 &> /dev/null; then
     sudo "$(dirname "$0")/init_pm2.sh"
 else echo -e "${g}pm2 已安装${n}"; fi
 
+# 安装 OPA
+echo -e "${b}检查 OPA 是否已安装...${n}"
+if ! command -v opa &> /dev/null; then
+    sudo "$(dirname "$0")/init_opa.sh"
+else echo -e "${g}opa 已安装${n}"; fi
+
 # 安装 vault
 echo -e "${b}检查 vault 是否已安装...${n}"
 if ! command -v vault &> /dev/null; then

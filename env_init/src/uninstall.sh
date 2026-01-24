@@ -11,6 +11,9 @@ sudo "$(dirname "$0")/uninstall_percona_pgsql.sh"
 # 卸载 vault
 sudo "$(dirname "$0")/uninstall_vault.sh" -n
 
+# 卸载 OPA
+sudo "$(dirname "$0")/uninstall_opa.sh"
+
 # 卸载 vapor
 sudo "$(dirname "$0")/uninstall_vapor.sh"
 
