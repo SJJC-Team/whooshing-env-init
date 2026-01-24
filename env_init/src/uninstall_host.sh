@@ -12,18 +12,16 @@ if [ -f "/home/woo/.env" ]; then
     log_info "发现环境文件 /home/woo/.env"
     source "/home/woo/.env"
     
-    if confirm_action "是否删除 /home/woo/.env 并备份数据目录？" "$1"; then
-        sudo rm -f "/home/woo/.env"
+    sudo rm -f "/home/woo/.env"
 
-        if [ -n "$WHOOSHING_DATA_DIR" ] && [ -d "$WHOOSHING_DATA_DIR" ]; then
-            log_info "备份和清理数据目录..."
-            mkdir -p "${WHOOSHING_DATA_DIR}.bak"
-            TIMESTAMP=$(date +%Y%m%d%H%M%S)
-            mv "$WHOOSHING_DATA_DIR" "${WHOOSHING_DATA_DIR}.bak/${TIMESTAMP}"
-            log_success "数据已备份至 ${WHOOSHING_DATA_DIR}.bak/${TIMESTAMP}"
-        else 
-            log_info "数据目录不存在, 跳过备份..."
-        fi
+    if [ -n "$WHOOSHING_DATA_DIR" ] && [ -d "$WHOOSHING_DATA_DIR" ]; then
+        log_info "备份和清理数据目录..."
+        mkdir -p "${WHOOSHING_DATA_DIR}.bak"
+        TIMESTAMP=$(date +%Y%m%d%H%M%S)
+        mv "$WHOOSHING_DATA_DIR" "${WHOOSHING_DATA_DIR}.bak/${TIMESTAMP}"
+        log_success "数据已备份至 ${WHOOSHING_DATA_DIR}.bak/${TIMESTAMP}"
+    else 
+        log_info "数据目录不存在, 跳过备份..."
     fi
 else 
     log_info "环境文件不存在, 跳过..."

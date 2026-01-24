@@ -46,20 +46,15 @@ touch "$ENV_FILE"
 chown "root:whooshing" "$ENV_FILE"
 chmod 660 "$ENV_FILE"
 
-echo "WHOOSHING_DATA_DIR=$data_dir" >> "$ENV_FILE"
-echo "export WHOOSHING_DATA_DIR=$data_dir" >> "$ENV_FILE"
-echo "WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> "$ENV_FILE"
-echo "export WHOOSHING_FILESTORAGE_ROOT_DIR=$file_storage_dir" >> "$ENV_FILE"
+echo "export WHOOSHING_DATA_DIR=\"$data_dir\"" >> "$ENV_FILE"
+echo "export WHOOSHING_FILESTORAGE_ROOT_DIR=\"$file_storage_dir\"" >> "$ENV_FILE"
 
 OWNER_ID=$(id -u root)
-echo "WHOOSHING_FILESTORAGE_OWNER_ID=$OWNER_ID" >> "$ENV_FILE"
-echo "export WHOOSHING_FILESTORAGE_OWNER_ID=$OWNER_ID" >> "$ENV_FILE"
+echo "export WHOOSHING_FILESTORAGE_OWNER_ID=\"$OWNER_ID\"" >> "$ENV_FILE"
 
 GROUP_ID=$(getent group whooshing | cut -d: -f3)
-echo "WHOOSHING_FILESTORAGE_GROUP_ID=$GROUP_ID" >> "$ENV_FILE"
-echo "export WHOOSHING_FILESTORAGE_GROUP_ID=$GROUP_ID" >> "$ENV_FILE"
+echo "export WHOOSHING_FILESTORAGE_GROUP_ID=\"$GROUP_ID\"" >> "$ENV_FILE"
 
-echo "WHOOSHING_FILESTORAGE_RWX=504" >> "$ENV_FILE"
 echo "export WHOOSHING_FILESTORAGE_RWX=504" >> "$ENV_FILE"
 
 # 再次确保权限正确

@@ -17,9 +17,7 @@ else
 fi
 
 if [ -d "$HOME/.pm2" ]; then
-    if confirm_action "是否删除 pm2 数据目录 (~/.pm2)？" "$1"; then
-        sudo rm -rf ~/.pm2
-    fi
+    sudo rm -rf ~/.pm2
 fi
 log_success "pm2 删除成功"
 
